@@ -149,7 +149,10 @@ pub fn degrees_to_direction(degrees: f64) -> &'static str {
         "W", "WNW", "NW", "NNW"
     ];
     
-    let index = ((degrees + 11.25) % 360.0 / 22.5) as usize;
+    // Normalize degrees to 0-360 range and calculate the index
+    // Adding 11.25 shifts the boundaries to align with direction ranges
+    let normalized_degrees = degrees % 360.0;
+    let index = ((normalized_degrees + 11.25) % 360.0 / 22.5) as usize;
     directions[index]
 }
 
