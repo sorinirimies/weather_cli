@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Result};
-use chrono::{DateTime, Duration, TimeZone, Timelike, Utc};
+use chrono::{DateTime, Duration, Timelike, Utc};
 use reqwest::Client;
 use serde_json::Value;
 use std::collections::HashMap;
@@ -18,6 +18,7 @@ const OPENMETEO_BASE_URL: &str = "https://api.open-meteo.com/v1";
 pub struct WeatherForecaster {
     client: Client,
     config: WeatherConfig,
+    #[allow(dead_code)]
     api_keys: HashMap<String, String>,
 }
 
@@ -445,8 +446,8 @@ impl WeatherForecaster {
             66 | 67 => WeatherCondition::Rain,         // Freezing Rain
             71 | 73 | 75 => WeatherCondition::Snow,    // Snow
             77 => WeatherCondition::Snow,              // Snow grains
-            80 | 81 | 82 => WeatherCondition::Rain,    // Rain showers
-            85 | 86 => WeatherCondition::Snow,         // Snow showers
+            80..=82 => WeatherCondition::Rain,     // Rain showers
+            85..=86 => WeatherCondition::Snow,          // Snow showers
             95 => WeatherCondition::Thunderstorm,      // Thunderstorm
             96 | 99 => WeatherCondition::Thunderstorm, // Thunderstorm with hail
             _ => WeatherCondition::Unknown,

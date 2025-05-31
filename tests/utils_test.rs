@@ -1,5 +1,4 @@
 use chrono::{DateTime, Utc};
-use std::str::FromStr;
 use weather_cli::modules::utils::{
     convert_temperature, degrees_to_direction, format_datetime, format_wind_speed, get_temp_unit,
     parse_with_default, timestamp_to_datetime, truncate_string,

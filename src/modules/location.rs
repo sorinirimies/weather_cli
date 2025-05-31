@@ -151,15 +151,12 @@ impl LocationService {
             lat, lon
         );
 
-        match self.client.get(&url).send().await {
-            Ok(response) => {
-                if let Ok(json) = response.json::<Value>().await {
-                    if let Some(tz) = json["timezoneId"].as_str() {
-                        return Ok(tz.to_string());
-                    }
+        if let Ok(response) = self.client.get(&url).send().await {
+            if let Ok(json) = response.json::<Value>().await {
+                if let Some(tz) = json["timezoneId"].as_str() {
+                    return Ok(tz.to_string());
                 }
             }
-            Err(_) => {}
         }
 
         // Fallback to a simple timezone estimation

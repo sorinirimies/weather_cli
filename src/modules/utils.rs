@@ -9,7 +9,7 @@ use std::time::Duration;
 pub fn timestamp_to_datetime(timestamp: i64) -> DateTime<Utc> {
     Utc.timestamp_opt(timestamp, 0)
         .single()
-        .unwrap_or_else(|| Utc::now())
+        .unwrap_or_else(Utc::now)
 }
 
 /// Convert a datetime to a human-readable string

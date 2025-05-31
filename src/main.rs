@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::Parser;
 use colored::*;
 use std::process;
 use std::time::Duration;
@@ -7,7 +7,7 @@ mod modules;
 
 use modules::forecaster::WeatherForecaster;
 use modules::location::LocationService;
-use modules::types::{DetailLevel, Forecast, WeatherConfig};
+use modules::types::{DetailLevel, WeatherConfig};
 use modules::ui::WeatherUI;
 
 #[derive(Parser)]

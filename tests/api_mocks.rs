@@ -1,6 +1,6 @@
 // Note: Using mockito with tokio can cause runtime conflicts in tests
 use weather_cli::modules::forecaster::WeatherForecaster;
-use weather_cli::modules::types::{Location, WeatherConfig};
+use weather_cli::modules::types::WeatherConfig;
 
 // This test is disabled due to tokio runtime conflicts
 // To be fixed in a future update

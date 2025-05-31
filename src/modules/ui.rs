@@ -1,11 +1,9 @@
 use anyhow::Result;
-use chrono::{DateTime, Datelike, Duration, Local, NaiveTime, Timelike, Utc, Weekday};
+use chrono::{DateTime, Datelike, Timelike, Utc, Weekday};
 use colored::*;
 use console::Term;
 use dialoguer::{theme::ColorfulTheme, Input, Select};
 use indicatif::{ProgressBar, ProgressStyle};
-use spinners::{Spinner, Spinners};
-use std::io::Write;
 use std::thread::sleep;
 use std::time::Duration as StdDuration;
 

@@ -5,5 +5,4 @@ pub mod types;
 pub mod ui;
 pub mod utils;
 
-// Re-export common types
-pub use types::{CurrentWeather, DetailLevel, Forecast, Location, WeatherConfig};
+// We don't need to re-export types as they're already accessible via the modules

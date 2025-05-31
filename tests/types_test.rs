@@ -1,5 +1,5 @@
 use weather_cli::modules::types::{
-    DetailLevel, Location, WeatherCondition, WeatherConfig, WeatherDescription,
+    DetailLevel, Location, WeatherCondition, WeatherConfig,
 };
 
 #[test]
