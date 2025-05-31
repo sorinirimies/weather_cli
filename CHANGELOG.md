@@ -2,7 +2,7 @@
 
 All notable changes to Weather Man will be documented in this file.
 
-## [0.0.7] - 2023-06-02
+## [0.1.5] - 2023-06-02
 
 ### Features
 - Added next days forecast display with clean formatting
