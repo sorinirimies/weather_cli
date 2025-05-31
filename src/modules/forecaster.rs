@@ -438,19 +438,19 @@ impl WeatherForecaster {
     /// Convert WMO weather code to our internal WeatherCondition
     pub fn wmo_code_to_condition(&self, code: u32) -> WeatherCondition {
         match code {
-            0 => WeatherCondition::Clear,               // Clear sky
-            1..=3 => WeatherCondition::Clouds,          // Partly cloudy
-            45 | 48 => WeatherCondition::Fog,           // Fog
-            51..=55 => WeatherCondition::Drizzle,       // Drizzle
-            56 | 57 => WeatherCondition::Drizzle,       // Freezing Drizzle
-            61..=65 => WeatherCondition::Rain,          // Rain
-            66 | 67 => WeatherCondition::Rain,          // Freezing Rain
-            71..=75 => WeatherCondition::Snow,          // Snow
-            77 => WeatherCondition::Snow,               // Snow grains
-            80..=82 => WeatherCondition::Rain,          // Rain showers
-            85..=86 => WeatherCondition::Snow,          // Snow showers
-            95 => WeatherCondition::Thunderstorm,       // Thunderstorm
-            96 | 99 => WeatherCondition::Thunderstorm,  // Thunderstorm with hail
+            0 => WeatherCondition::Clear,              // Clear sky
+            1..=3 => WeatherCondition::Clouds,         // Partly cloudy
+            45 | 48 => WeatherCondition::Fog,          // Fog
+            51..=55 => WeatherCondition::Drizzle,      // Drizzle
+            56 | 57 => WeatherCondition::Drizzle,      // Freezing Drizzle
+            61..=65 => WeatherCondition::Rain,         // Rain
+            66 | 67 => WeatherCondition::Rain,         // Freezing Rain
+            71..=75 => WeatherCondition::Snow,         // Snow
+            77 => WeatherCondition::Snow,              // Snow grains
+            80..=82 => WeatherCondition::Rain,         // Rain showers
+            85..=86 => WeatherCondition::Snow,         // Snow showers
+            95 => WeatherCondition::Thunderstorm,      // Thunderstorm
+            96 | 99 => WeatherCondition::Thunderstorm, // Thunderstorm with hail
             _ => WeatherCondition::Unknown,
         }
     }

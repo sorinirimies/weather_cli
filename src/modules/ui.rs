@@ -656,10 +656,6 @@ impl WeatherUI {
 
         Ok(units.to_string())
     }
-
-
-
-
 }
 
 // Helper functions for formatting
