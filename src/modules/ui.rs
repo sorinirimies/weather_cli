@@ -108,14 +108,25 @@ impl WeatherUI {
         };
 
         // Location and time
-        println!("📍 {}: {}, {}", "Location".bold(), location.name, location.country);
-        println!("🕓 {}: {} ({})", "Local Time".bold(), local_time, location.timezone);
+        println!(
+            "📍 {}: {}, {}",
+            "Location".bold(),
+            location.name,
+            location.country
+        );
+        println!(
+            "🕓 {}: {} ({})",
+            "Local Time".bold(),
+            local_time,
+            location.timezone
+        );
         println!();
-        
+
         // Main weather display
         println!("{} {}: {}", emoji, "Conditions".bold(), conditions);
-        
-        println!("🌡️ {}: {:.1}{} (Feels like: {:.1}{})",
+
+        println!(
+            "🌡️ {}: {:.1}{} (Feels like: {:.1}{})",
             "Temperature".bold(),
             weather.temperature,
             temp_unit,
@@ -134,7 +145,8 @@ impl WeatherUI {
             "m/s"
         };
         let wind_direction = get_wind_direction_arrow(weather.wind_direction);
-        println!("💨 {}: {:.1} {} {}", 
+        println!(
+            "💨 {}: {:.1} {} {}",
             "Wind".bold(),
             weather.wind_speed,
             wind_unit,
@@ -215,7 +227,7 @@ impl WeatherUI {
         // Get current hour for highlighting
         let now = Utc::now();
         let current_hour = now.hour();
-        
+
         // Print table header
         println!("┌────────┬───────────┬────────┬─────────┬────────┬─────────┐");
         println!("│  Hour  │  Weather  │  Temp  │  Precip │  Wind  │ Humidity│");
@@ -227,10 +239,11 @@ impl WeatherUI {
             let hour_num = hour_dt.hour();
             let local_time = format_hour_only(&hour.timestamp, &location.timezone);
             let emoji = hour.main_condition.get_emoji();
-            
+
             // Format conditions description
             let conditions = if let Some(desc) = hour.conditions.first() {
-                desc.description.to_title_case()[..std::cmp::min(8, desc.description.len())].to_string()
+                desc.description.to_title_case()[..std::cmp::min(8, desc.description.len())]
+                    .to_string()
             } else {
                 hour.main_condition.to_string()
             };
@@ -241,7 +254,7 @@ impl WeatherUI {
             } else {
                 "0%".to_string()
             };
-            
+
             // Wind information
             let wind_info = if hour.wind_speed > 0.0 {
                 let wind_dir = get_wind_direction_arrow(hour.wind_direction);
@@ -249,7 +262,7 @@ impl WeatherUI {
             } else {
                 "Calm".to_string()
             };
-            
+
             // Highlight current hour
             let line = if hour_num == current_hour {
                 format!(
@@ -262,7 +275,8 @@ impl WeatherUI {
                     precip,
                     wind_info,
                     format!("{}%", hour.humidity)
-                ).bright_yellow()
+                )
+                .bright_yellow()
             } else {
                 format!(
                     "│{:^8}│ {:<2} {:<7} │ {:.1}{:<3} │ {:<7} │ {:<6} │ {:<7} │",
@@ -274,7 +288,8 @@ impl WeatherUI {
                     precip,
                     wind_info,
                     format!("{}%", hour.humidity)
-                ).normal()
+                )
+                .normal()
             };
 
             println!("{}", line);
@@ -319,11 +334,11 @@ impl WeatherUI {
         } else {
             "°C"
         };
-        
+
         // Next Days Forecast - Enhanced visualization
         println!("{}", "📊 NEXT DAYS AT A GLANCE".bold().bright_cyan());
         println!();
-        
+
         // Display forecast information in a clean format
         for (i, day) in forecast.iter().enumerate().take(7) {
             // Format day name
@@ -337,48 +352,50 @@ impl WeatherUI {
 
             let emoji = day.main_condition.get_emoji();
             let date_str = format_date_short(&day.date, &location.timezone);
-            
+
             // Format temperatures
             let temp_high = format!("{:.0}{}", day.temp_max, temp_unit);
             let temp_low = format!("{:.0}{}", day.temp_min, temp_unit);
-            
+
             // Precipitation percentage
             let precip = if day.pop > 0.0 {
                 format!("{}%", (day.pop * 100.0) as u8)
             } else {
                 "0%".to_string()
             };
-            
+
             // Format humidity
             let humidity = format!("{}%", day.humidity);
-            
+
             // Print box header
             println!("┌─────────────────────────────────────────────────┐");
-            
+
             // Print forecast with color highlighting based on conditions
             println!("│ {} {} {:<36}│", day_name.bold(), emoji, date_str);
-            
+
             // Get weather description
             let weather_desc = if let Some(desc) = day.conditions.first() {
                 desc.description.to_title_case()
             } else {
                 day.main_condition.to_string()
             };
-            
+
             // Print details in a clean format
             match day.main_condition {
-                WeatherCondition::Rain | WeatherCondition::Drizzle | WeatherCondition::Thunderstorm => {
+                WeatherCondition::Rain
+                | WeatherCondition::Drizzle
+                | WeatherCondition::Thunderstorm => {
                     println!("│  Weather: {:<40}│", weather_desc);
                     println!("│  Temp: {} / {:<36}│", temp_high, temp_low);
                     println!("│  Precipitation: {:<31}│", precip.bright_blue());
                     println!("│  Humidity: {:<36}│", humidity);
-                },
+                }
                 WeatherCondition::Clear => {
                     println!("│  Weather: {:<40}│", weather_desc);
                     println!("│  Temp: {} / {:<36}│", temp_high.bright_yellow(), temp_low);
                     println!("│  Precipitation: {:<31}│", precip);
                     println!("│  Humidity: {:<36}│", humidity);
-                },
+                }
                 _ => {
                     println!("│  Weather: {:<40}│", weather_desc);
                     println!("│  Temp: {} / {:<36}│", temp_high, temp_low);
@@ -389,11 +406,14 @@ impl WeatherUI {
             println!("└─────────────────────────────────────────────────┘");
         }
         println!();
-        
+
         // Add temperature summary and activity forecast
-        println!("{}", "📈 TEMPERATURE TRENDS & ACTIVITIES".bold().bright_cyan());
+        println!(
+            "{}",
+            "📈 TEMPERATURE TRENDS & ACTIVITIES".bold().bright_cyan()
+        );
         println!();
-        
+
         // Print temperature trends in a simple format
         println!("  TEMPERATURE OUTLOOK:");
         for (i, day) in forecast.iter().enumerate().take(7) {
@@ -405,7 +425,7 @@ impl WeatherUI {
                 let weekday = format_weekday(&day.date);
                 format!("{} {}/{}", &weekday[..3], day.date.month(), day.date.day())
             };
-            
+
             // Create a simple visual indicator
             let temp_indicator = if day.temp_max > 28.0 {
                 "🔥 Hot  ".bright_red()
@@ -418,16 +438,21 @@ impl WeatherUI {
             } else {
                 "❄️ Cold ".blue()
             };
-            
-            println!("  • {:<12} {:<9} {:.0}{} / {:.0}{}", 
-                     label, temp_indicator, day.temp_max, temp_unit, day.temp_min, temp_unit);
+
+            println!(
+                "  • {:<12} {:<9} {:.0}{} / {:.0}{}",
+                label, temp_indicator, day.temp_max, temp_unit, day.temp_min, temp_unit
+            );
         }
         println!();
-        
+
         // Add activity recommendations in a simpler format
-        println!("{}", "🎯 BEST ACTIVITIES FOR UPCOMING DAYS".bold().bright_cyan());
+        println!(
+            "{}",
+            "🎯 BEST ACTIVITIES FOR UPCOMING DAYS".bold().bright_cyan()
+        );
         println!();
-        
+
         // Simplified activity recommendations for next 3 days
         for (i, day) in forecast.iter().enumerate().take(3) {
             let day_name = if i == 0 {
@@ -437,17 +462,20 @@ impl WeatherUI {
             } else {
                 format_weekday(&day.date).to_uppercase()
             };
-            
+
             println!("  {} ({})", day_name.bold(), day.main_condition.get_emoji());
-            
+
             // Best activities based on weather
             let temp_avg = (day.temp_max + day.temp_min) / 2.0;
-            let is_rainy = matches!(day.main_condition, WeatherCondition::Rain | WeatherCondition::Drizzle | WeatherCondition::Thunderstorm);
+            let is_rainy = matches!(
+                day.main_condition,
+                WeatherCondition::Rain | WeatherCondition::Drizzle | WeatherCondition::Thunderstorm
+            );
             let is_clear = matches!(day.main_condition, WeatherCondition::Clear);
-            
+
             // Recommended activities
             println!("  Best for:");
-            
+
             if is_rainy {
                 println!("  • Indoor: 👍 Museums, movies, shopping, home activities");
                 println!("  • Outdoor: 👎 Not recommended");
@@ -461,14 +489,14 @@ impl WeatherUI {
                 println!("  • Outdoor: 👍 Walking, urban exploration, photography");
                 println!("  • Indoor/Outdoor: 👍 Shopping, museums, casual dining");
             }
-            
+
             println!();
         }
-        
+
         // Show detailed view for today and tomorrow
         println!("{}", "🔍 DETAILED FORECAST:".bold().bright_cyan());
         println!();
-        
+
         // Show expanded information for next 5 days
         for (i, day) in forecast.iter().enumerate().take(5) {
             // Format day name
@@ -538,7 +566,12 @@ impl WeatherUI {
                     71..=90 => "🌧️",
                     _ => "⛈️",
                 };
-                println!("   {} {}: {}%", rain_icon, "Precipitation Chance".bold(), pop_pct);
+                println!(
+                    "   {} {}: {}%",
+                    rain_icon,
+                    "Precipitation Chance".bold(),
+                    pop_pct
+                );
             }
 
             // Wind info
@@ -557,11 +590,7 @@ impl WeatherUI {
             );
 
             // Humidity info
-            println!(
-                "   💧 {}: {}%",
-                "Humidity".bold(),
-                day.humidity
-            );
+            println!("   💧 {}: {}%", "Humidity".bold(), day.humidity);
 
             // UV index
             let uv_display = match day.uv_index as u32 {
@@ -572,64 +601,139 @@ impl WeatherUI {
                 _ => format!("{:.1} (Extreme)", day.uv_index).red(),
             };
             println!("   ☀️ {}: {}", "UV Index".bold(), uv_display);
-            
+
             // Daily recommendations based on conditions
             let temp_avg = (day.temp_max + day.temp_min) / 2.0;
-            
+
             // Activity recommendations based on weather and temperature
             println!("   🔮 {}: ", "Outlook".bold());
-            
+
             match day.main_condition {
                 WeatherCondition::Rain | WeatherCondition::Drizzle => {
                     if day.pop > 0.7 {
-                        println!("      ☔ {}", "Heavy rain expected. Plan for indoor activities.".bright_blue());
-                        println!("      🏠 {}", "Recommended: Movies, museums, shopping, or home cooking.".bright_blue());
+                        println!(
+                            "      ☔ {}",
+                            "Heavy rain expected. Plan for indoor activities.".bright_blue()
+                        );
+                        println!(
+                            "      🏠 {}",
+                            "Recommended: Movies, museums, shopping, or home cooking."
+                                .bright_blue()
+                        );
                     } else {
-                        println!("      ☔ {}", "Light rain expected. Bring an umbrella if going out.".bright_blue());
-                        println!("      🏠 {}", "Recommended: Quick errands, covered venues, or indoor sports.".bright_blue());
+                        println!(
+                            "      ☔ {}",
+                            "Light rain expected. Bring an umbrella if going out.".bright_blue()
+                        );
+                        println!(
+                            "      🏠 {}",
+                            "Recommended: Quick errands, covered venues, or indoor sports."
+                                .bright_blue()
+                        );
                     }
-                },
+                }
                 WeatherCondition::Thunderstorm => {
-                    println!("      ⛈️ {}", "Thunderstorms expected. Stay safe indoors.".bright_red());
-                    println!("      ⚠️ {}", "Not recommended: Any outdoor activities or travel if avoidable.".bright_red());
-                    println!("      🏠 {}", "Recommended: Home activities, reading, cooking, or gaming.".bright_red());
-                },
+                    println!(
+                        "      ⛈️ {}",
+                        "Thunderstorms expected. Stay safe indoors.".bright_red()
+                    );
+                    println!(
+                        "      ⚠️ {}",
+                        "Not recommended: Any outdoor activities or travel if avoidable."
+                            .bright_red()
+                    );
+                    println!(
+                        "      🏠 {}",
+                        "Recommended: Home activities, reading, cooking, or gaming.".bright_red()
+                    );
+                }
                 WeatherCondition::Snow => {
-                    println!("      ❄️ {}", "Snowy conditions. Prepare for potential travel disruptions.".bright_blue());
-                    println!("      ⚠️ {}", "Not recommended: Long trips or driving if inexperienced on snow.".bright_blue());
-                    println!("      🏂 {}", "Recommended: Snow sports if conditions permit, or cozy indoor activities.".bright_blue());
-                },
+                    println!(
+                        "      ❄️ {}",
+                        "Snowy conditions. Prepare for potential travel disruptions.".bright_blue()
+                    );
+                    println!(
+                        "      ⚠️ {}",
+                        "Not recommended: Long trips or driving if inexperienced on snow."
+                            .bright_blue()
+                    );
+                    println!(
+                        "      🏂 {}",
+                        "Recommended: Snow sports if conditions permit, or cozy indoor activities."
+                            .bright_blue()
+                    );
+                }
                 WeatherCondition::Clear => {
                     if temp_avg > 25.0 {
-                        println!("      ☀️ {}", "Clear and warm! Perfect for outdoor activities.".green());
-                        println!("      🏊 {}", "Recommended: Swimming, beach visits, park outings, or outdoor dining.".green());
+                        println!(
+                            "      ☀️ {}",
+                            "Clear and warm! Perfect for outdoor activities.".green()
+                        );
+                        println!(
+                            "      🏊 {}",
+                            "Recommended: Swimming, beach visits, park outings, or outdoor dining."
+                                .green()
+                        );
                     } else if temp_avg < 10.0 {
-                        println!("      ☀️ {}", "Clear but cool. Good for active outdoor activities.".green());
+                        println!(
+                            "      ☀️ {}",
+                            "Clear but cool. Good for active outdoor activities.".green()
+                        );
                         println!("      🏃 {}", "Recommended: Hiking, running, cycling, or sightseeing with warm clothing.".green());
                     } else {
-                        println!("      ☀️ {}", "Perfect weather conditions. Ideal for almost any outdoor activity.".green());
+                        println!(
+                            "      ☀️ {}",
+                            "Perfect weather conditions. Ideal for almost any outdoor activity."
+                                .green()
+                        );
                         println!("      🌳 {}", "Recommended: Parks, hiking, cycling, outdoor sports, or dining al fresco.".green());
                     }
-                },
+                }
                 WeatherCondition::Clouds => {
-                    println!("      ☁️ {}", "Cloudy but pleasant. Good for outdoor activities without direct sun.".bright_blue());
+                    println!(
+                        "      ☁️ {}",
+                        "Cloudy but pleasant. Good for outdoor activities without direct sun."
+                            .bright_blue()
+                    );
                     println!("      🚶 {}", "Recommended: Walking tours, shopping districts, light hikes, or photography.".bright_blue());
-                },
+                }
                 WeatherCondition::Fog | WeatherCondition::Mist => {
-                    println!("      🌫️ {}", "Foggy conditions. Be cautious while driving or in unfamiliar areas.".yellow());
-                    println!("      ⚠️ {}", "Not recommended: Activities requiring good visibility or long drives.".yellow());
-                    println!("      🏙️ {}", "Recommended: City exploration, museums, or atmospheric photography.".yellow());
-                },
+                    println!(
+                        "      🌫️ {}",
+                        "Foggy conditions. Be cautious while driving or in unfamiliar areas."
+                            .yellow()
+                    );
+                    println!(
+                        "      ⚠️ {}",
+                        "Not recommended: Activities requiring good visibility or long drives."
+                            .yellow()
+                    );
+                    println!(
+                        "      🏙️ {}",
+                        "Recommended: City exploration, museums, or atmospheric photography."
+                            .yellow()
+                    );
+                }
                 _ => {
-                    println!("      📋 {}", "Check local forecasts for specific activity recommendations.".normal());
+                    println!(
+                        "      📋 {}",
+                        "Check local forecasts for specific activity recommendations.".normal()
+                    );
                 }
             }
-            
+
             // UV index specific advice
             if day.uv_index > 7.0 {
-                println!("      🧴 {}", "Very high UV index! Sunscreen and protective clothing essential.".bright_yellow());
+                println!(
+                    "      🧴 {}",
+                    "Very high UV index! Sunscreen and protective clothing essential."
+                        .bright_yellow()
+                );
             } else if day.uv_index > 5.0 {
-                println!("      🧴 {}", "High UV index. Wear sunscreen and seek shade during midday hours.".yellow());
+                println!(
+                    "      🧴 {}",
+                    "High UV index. Wear sunscreen and seek shade during midday hours.".yellow()
+                );
             }
 
             println!();
@@ -728,13 +832,13 @@ impl WeatherUI {
         // Get the current hour to determine time of day
         let now = Utc::now();
         let hour = now.hour();
-        
+
         // Define time periods
         let is_morning = hour >= 5 && hour < 12;
         let is_afternoon = hour >= 12 && hour < 17;
         let is_evening = hour >= 17 && hour < 21;
         let is_night = hour >= 21 || hour < 5;
-        
+
         let time_of_day = if is_morning {
             "morning"
         } else if is_afternoon {
@@ -761,27 +865,47 @@ impl WeatherUI {
         if feels_like < very_cold {
             println!(
                 "🧣 {}",
-                format!("Very cold {}! Wear heavy winter clothing, hat, gloves and scarf.", time_of_day).yellow()
+                format!(
+                    "Very cold {}! Wear heavy winter clothing, hat, gloves and scarf.",
+                    time_of_day
+                )
+                .yellow()
             );
         } else if feels_like < cold {
             println!(
                 "🧥 {}",
-                format!("Cold {} conditions. Wear a warm jacket and layers.", time_of_day).yellow()
+                format!(
+                    "Cold {} conditions. Wear a warm jacket and layers.",
+                    time_of_day
+                )
+                .yellow()
             );
         } else if feels_like < mild {
             println!(
                 "🧥 {}",
-                format!("Cool {} weather. A light jacket or sweater recommended.", time_of_day).bright_blue()
+                format!(
+                    "Cool {} weather. A light jacket or sweater recommended.",
+                    time_of_day
+                )
+                .bright_blue()
             );
         } else if feels_like < warm {
             println!(
                 "👕 {}",
-                format!("Pleasant {} temperature. Light clothing should be comfortable.", time_of_day).green()
+                format!(
+                    "Pleasant {} temperature. Light clothing should be comfortable.",
+                    time_of_day
+                )
+                .green()
             );
         } else if feels_like < hot {
             println!(
                 "👕 {}",
-                format!("Warm {} weather. Light clothing and sun protection advised.", time_of_day).bright_yellow()
+                format!(
+                    "Warm {} weather. Light clothing and sun protection advised.",
+                    time_of_day
+                )
+                .bright_yellow()
             );
         } else {
             println!(
@@ -810,19 +934,31 @@ impl WeatherUI {
             WeatherCondition::Rain | WeatherCondition::Drizzle => {
                 println!(
                     "☔ {}",
-                    format!("Rainy {} conditions. Bring an umbrella or raincoat.", time_of_day).bright_blue()
+                    format!(
+                        "Rainy {} conditions. Bring an umbrella or raincoat.",
+                        time_of_day
+                    )
+                    .bright_blue()
                 );
             }
             WeatherCondition::Thunderstorm => {
                 println!(
                     "⛈️ {}",
-                    format!("Thunderstorms in the area this {}. Seek shelter and avoid open spaces.", time_of_day).bright_red()
+                    format!(
+                        "Thunderstorms in the area this {}. Seek shelter and avoid open spaces.",
+                        time_of_day
+                    )
+                    .bright_red()
                 );
             }
             WeatherCondition::Snow => {
                 println!(
                     "❄️ {}",
-                    format!("Snowy {} conditions. Dress warmly and take care on roads.", time_of_day).bright_blue()
+                    format!(
+                        "Snowy {} conditions. Dress warmly and take care on roads.",
+                        time_of_day
+                    )
+                    .bright_blue()
                 );
             }
             WeatherCondition::Fog | WeatherCondition::Mist => {
@@ -840,14 +976,24 @@ impl WeatherUI {
             }
             WeatherCondition::Clear => {
                 if is_night {
-                    println!("🌙 {}", "Clear night sky. Great for stargazing!".bright_blue());
+                    println!(
+                        "🌙 {}",
+                        "Clear night sky. Great for stargazing!".bright_blue()
+                    );
                 } else if weather.temperature > warm {
                     println!(
                         "☀️ {}",
-                        format!("Clear and warm {}. Great for outdoor activities!", time_of_day).green()
+                        format!(
+                            "Clear and warm {}. Great for outdoor activities!",
+                            time_of_day
+                        )
+                        .green()
                     );
                 } else {
-                    println!("☀️ {}", format!("Clear {} skies. Enjoy the weather!", time_of_day).green());
+                    println!(
+                        "☀️ {}",
+                        format!("Clear {} skies. Enjoy the weather!", time_of_day).green()
+                    );
                 }
             }
             WeatherCondition::Clouds => {
@@ -859,7 +1005,11 @@ impl WeatherUI {
                 } else {
                     println!(
                         "☁️ {}",
-                        format!("Cloudy {} conditions. Good for outdoor activities without direct sun.", time_of_day).bright_blue()
+                        format!(
+                            "Cloudy {} conditions. Good for outdoor activities without direct sun.",
+                            time_of_day
+                        )
+                        .bright_blue()
                     );
                 }
             }
