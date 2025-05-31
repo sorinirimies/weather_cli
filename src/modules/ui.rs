@@ -870,7 +870,11 @@ impl WeatherUI {
         if weather.wind_speed > 10.0 {
             println!(
                 "💨 {}",
-                format!("Strong winds this {}. Secure loose objects and be careful outdoors.", time_of_day).yellow()
+                format!(
+                    "Strong winds this {}. Secure loose objects and be careful outdoors.",
+                    time_of_day
+                )
+                .yellow()
             );
         }
 
@@ -1022,7 +1026,7 @@ fn convert_to_local(time: &DateTime<Utc>, timezone: &str) -> DateTime<Utc> {
         // Default to UTC if timezone is unknown
         _ => 0,
     };
-    
+
     *time + chrono::Duration::hours(hours_offset)
 }
 
