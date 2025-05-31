@@ -6,8 +6,61 @@ on:
       - "v*"
 
 jobs:
-  build:
-    name: Build and release
+  test:
+    name: Test and validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+          components: rustfmt, clippy
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Check formatting
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+      - name: Run clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: -- -D warnings
+
+      - name: Run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all-features
+
+      - name: Test build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+
+  publish:
+    name: Build and publish
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -84,19 +137,19 @@ jobs:
           echo "" >> RELEASE_CHANGELOG.md
           echo "## 📦 Installation" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
-          echo "\`\`\`bash" >> RELEASE_CHANGELOG.md
+          echo "```bash" >> RELEASE_CHANGELOG.md
           echo "cargo install weather_cli" >> RELEASE_CHANGELOG.md
-          echo "\`\`\`" >> RELEASE_CHANGELOG.md
+          echo "```" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
           echo "## 🚀 Quick Start" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
-          echo "\`\`\`bash" >> RELEASE_CHANGELOG.md
+          echo "```bash" >> RELEASE_CHANGELOG.md
           echo "# Get current weather" >> RELEASE_CHANGELOG.md
           echo "weather_cli" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
           echo "# Get forecast for a specific location" >> RELEASE_CHANGELOG.md
           echo "weather_cli -m forecast -l \"New York\"" >> RELEASE_CHANGELOG.md
-          echo "\`\`\`" >> RELEASE_CHANGELOG.md
+          echo "```" >> RELEASE_CHANGELOG.md
           
           # Show the generated release notes
           echo "Generated release notes:"
