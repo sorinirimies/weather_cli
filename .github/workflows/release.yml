@@ -6,8 +6,8 @@ on:
       - "v*"
 
 jobs:
-  test:
-    name: Test and validate
+  build:
+    name: Build and release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -52,40 +52,6 @@ jobs:
           command: test
           args: --all-features
 
-      - name: Test build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
-
-  publish:
-    name: Build and publish
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-
       - name: Install cliff
         uses: actions-rs/cargo@v1
         with:
@@ -102,7 +68,7 @@ jobs:
           sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
           
           # Update full changelog with git-cliff
-          git-cliff --tag "${{ github.ref_name }}" --output CHANGELOG.md
+          git-cliff --config cliff.toml --latest --output CHANGELOG.md
           
           # Generate release notes with git-cliff
           LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
@@ -110,14 +76,14 @@ jobs:
           # Generate release changelog using git-cliff
           if [ -n "$LAST_TAG" ]; then
             # Generate changelog between tags
-            git-cliff ${LAST_TAG}..${{ github.ref_name }} --strip header --context-size 0 > CLIFF_CHANGES.md
+            git-cliff --config cliff.toml ${LAST_TAG}..${{ github.ref_name }} --strip header > CLIFF_CHANGES.md
           else
             # Generate changelog for first release
-            git-cliff --tag ${{ github.ref_name }} --strip header --context-size 0 > CLIFF_CHANGES.md
+            git-cliff --config cliff.toml --tag ${{ github.ref_name }} --strip header > CLIFF_CHANGES.md
           fi
           
           # Create the release note template
-          echo "# Weather Man CLI ${VERSION}" > RELEASE_CHANGELOG.md
+          echo "# Weather CLI ${VERSION}" > RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
           echo "## 🚀 What's New" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
