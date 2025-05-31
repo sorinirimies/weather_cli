@@ -60,7 +60,7 @@ impl LocationService {
         let response = self
             .client
             .get(&url)
-            .header("User-Agent", "weather_man/0.1.0")
+            .header("User-Agent", "weather_man/0.0.6")
             .send()
             .await?;
 
@@ -105,7 +105,7 @@ impl LocationService {
         let response = self
             .client
             .get(&url)
-            .header("User-Agent", "weather_man/0.1.0")
+            .header("User-Agent", "weather_man/0.0.6")
             .send()
             .await?;
 
