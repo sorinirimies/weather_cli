@@ -5,6 +5,10 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   build:
     name: Build and release
@@ -140,8 +144,7 @@ jobs:
             LICENSE
             README.md
             CHANGELOG.md
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to crates.io
         uses: actions-rs/cargo@v1
