@@ -27,7 +27,9 @@ impl Default for WeatherConfig {
 }
 
 /// Level of detail for weather output
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Display, EnumString)]
+#[derive(
+    Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Display, EnumString,
+)]
 pub enum DetailLevel {
     #[strum(to_string = "Basic")]
     Basic,
@@ -246,12 +248,12 @@ pub struct Forecast {
 /// Represents air quality data
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AirQuality {
-    pub aqi: u8, // 1-5 scale (1: Good, 2: Fair, 3: Moderate, 4: Poor, 5: Very Poor)
-    pub co: f64, // Carbon monoxide (μg/m3)
-    pub no: f64, // Nitrogen monoxide (μg/m3)
-    pub no2: f64, // Nitrogen dioxide (μg/m3)
-    pub o3: f64,  // Ozone (μg/m3)
-    pub so2: f64, // Sulphur dioxide (μg/m3)
+    pub aqi: u8,    // 1-5 scale (1: Good, 2: Fair, 3: Moderate, 4: Poor, 5: Very Poor)
+    pub co: f64,    // Carbon monoxide (μg/m3)
+    pub no: f64,    // Nitrogen monoxide (μg/m3)
+    pub no2: f64,   // Nitrogen dioxide (μg/m3)
+    pub o3: f64,    // Ozone (μg/m3)
+    pub so2: f64,   // Sulphur dioxide (μg/m3)
     pub pm2_5: f64, // Fine particles (μg/m3)
     pub pm10: f64,  // Coarse particles (μg/m3)
     pub nh3: f64,   // Ammonia (μg/m3)

@@ -5,9 +5,15 @@ use weather_cli::modules::types::{
 #[test]
 fn test_weather_condition_from_str() {
     assert_eq!(WeatherCondition::from_str("clear"), WeatherCondition::Clear);
-    assert_eq!(WeatherCondition::from_str("clouds"), WeatherCondition::Clouds);
+    assert_eq!(
+        WeatherCondition::from_str("clouds"),
+        WeatherCondition::Clouds
+    );
     assert_eq!(WeatherCondition::from_str("rain"), WeatherCondition::Rain);
-    assert_eq!(WeatherCondition::from_str("drizzle"), WeatherCondition::Drizzle);
+    assert_eq!(
+        WeatherCondition::from_str("drizzle"),
+        WeatherCondition::Drizzle
+    );
     assert_eq!(
         WeatherCondition::from_str("thunderstorm"),
         WeatherCondition::Thunderstorm
@@ -20,9 +26,18 @@ fn test_weather_condition_from_str() {
     assert_eq!(WeatherCondition::from_str("dust"), WeatherCondition::Dust);
     assert_eq!(WeatherCondition::from_str("sand"), WeatherCondition::Sand);
     assert_eq!(WeatherCondition::from_str("ash"), WeatherCondition::Ash);
-    assert_eq!(WeatherCondition::from_str("squall"), WeatherCondition::Squall);
-    assert_eq!(WeatherCondition::from_str("tornado"), WeatherCondition::Tornado);
-    assert_eq!(WeatherCondition::from_str("unknown"), WeatherCondition::Unknown);
+    assert_eq!(
+        WeatherCondition::from_str("squall"),
+        WeatherCondition::Squall
+    );
+    assert_eq!(
+        WeatherCondition::from_str("tornado"),
+        WeatherCondition::Tornado
+    );
+    assert_eq!(
+        WeatherCondition::from_str("unknown"),
+        WeatherCondition::Unknown
+    );
     assert_eq!(
         WeatherCondition::from_str("nonexistent"),
         WeatherCondition::Unknown
@@ -58,7 +73,7 @@ fn test_detail_level() {
     assert!(DetailLevel::Basic < DetailLevel::Standard);
     assert!(DetailLevel::Standard < DetailLevel::Detailed);
     assert!(DetailLevel::Detailed < DetailLevel::Debug);
-    
+
     // Test display
     assert_eq!(DetailLevel::Basic.to_string(), "Basic");
     assert_eq!(DetailLevel::Standard.to_string(), "Standard");

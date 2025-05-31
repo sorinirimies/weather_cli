@@ -1,5 +1,5 @@
 use anyhow::Result;
-use chrono::{DateTime, Datelike, Duration, Local, NaiveTime, Utc, Weekday, Timelike};
+use chrono::{DateTime, Datelike, Duration, Local, NaiveTime, Timelike, Utc, Weekday};
 use colored::*;
 use console::Term;
 use dialoguer::{theme::ColorfulTheme, Input, Select};
@@ -9,7 +9,10 @@ use std::io::Write;
 use std::thread::sleep;
 use std::time::Duration as StdDuration;
 
-use crate::modules::types::{CurrentWeather, DailyForecast, Forecast, HourlyForecast, Location, WeatherCondition, WeatherConfig};
+use crate::modules::types::{
+    CurrentWeather, DailyForecast, Forecast, HourlyForecast, Location, WeatherCondition,
+    WeatherConfig,
+};
 // use crate::modules::utils::*;
 
 /// Handles UI rendering and animations
@@ -35,9 +38,9 @@ impl WeatherUI {
         if self.json_output {
             return Ok(());
         }
-        
+
         self.term.clear_screen()?;
-        
+
         let banner = r#"
  _       __           __  __                 __  ___          
 | |     / /__  ____ _/ /_/ /_  ___  _____   /  |/  /___ _____ 
@@ -49,11 +52,11 @@ impl WeatherUI {
         // Always display the banner directly without animations
         println!("{}", banner.bright_cyan());
         println!("\n{}", "⟨⟨⟨ WEATHER MAN ACTIVATED ⟩⟩⟩".bright_cyan());
-        
+
         println!();
         Ok(())
     }
-    
+
     /// Show animation when connecting to weather services
     /// Show connecting message
     pub fn show_connecting_animation(&self) -> Result<()> {
@@ -63,30 +66,53 @@ impl WeatherUI {
         }
         Ok(())
     }
-    
+
     /// Display current weather information
-    pub fn show_current_weather(&self, weather: &CurrentWeather, location: &Location) -> Result<()> {
-        println!("{}", "╔═══════════════════════════════════════════════════╗".bright_cyan());
-        println!("{}", "║               🌡️ CURRENT CONDITIONS 🌡️             ║".bright_cyan());
-        println!("{}", "╚═══════════════════════════════════════════════════╝".bright_cyan());
+    pub fn show_current_weather(
+        &self,
+        weather: &CurrentWeather,
+        location: &Location,
+    ) -> Result<()> {
+        println!(
+            "{}",
+            "╔═══════════════════════════════════════════════════╗".bright_cyan()
+        );
+        println!(
+            "{}",
+            "║               🌡️ CURRENT CONDITIONS 🌡️             ║".bright_cyan()
+        );
+        println!(
+            "{}",
+            "╚═══════════════════════════════════════════════════╝".bright_cyan()
+        );
         println!();
-        
+
         if self.animation_enabled {
             sleep(StdDuration::from_millis(300));
         }
-        
+
         // Format local time based on location's timezone
         let local_time = format_local_time(&weather.timestamp, &location.timezone);
-        
+
         // Display location and time
-        println!("📍 {}: {}, {}", "Location".bold(), location.name, location.country);
-        println!("🕓 {}: {} ({})", "Local Time".bold(), local_time, location.timezone);
+        println!(
+            "📍 {}: {}, {}",
+            "Location".bold(),
+            location.name,
+            location.country
+        );
+        println!(
+            "🕓 {}: {} ({})",
+            "Local Time".bold(),
+            local_time,
+            location.timezone
+        );
         println!();
-        
+
         if self.animation_enabled {
             sleep(StdDuration::from_millis(300));
         }
-        
+
         // Display main weather info with condition emoji
         let emoji = weather.main_condition.get_emoji();
         let conditions = if let Some(desc) = weather.conditions.first() {
@@ -94,37 +120,62 @@ impl WeatherUI {
         } else {
             weather.main_condition.to_string()
         };
-        
-        println!("{} {} {}", emoji, "Conditions:".bold(), conditions.to_title_case());
-        
+
+        println!(
+            "{} {} {}",
+            emoji,
+            "Conditions:".bold(),
+            conditions.to_title_case()
+        );
+
         // Format temperatures based on units
-        let temp_unit = if self.config().units == "imperial" { "°F" } else { "°C" };
-        println!("🌡️ {}: {:.1}{} (Feels like: {:.1}{})", 
-            "Temperature".bold(), weather.temperature, temp_unit, weather.feels_like, temp_unit);
-        
+        let temp_unit = if self.config().units == "imperial" {
+            "°F"
+        } else {
+            "°C"
+        };
+        println!(
+            "🌡️ {}: {:.1}{} (Feels like: {:.1}{})",
+            "Temperature".bold(),
+            weather.temperature,
+            temp_unit,
+            weather.feels_like,
+            temp_unit
+        );
+
         if self.animation_enabled {
             sleep(StdDuration::from_millis(300));
         }
-        
+
         // Wind info
-        let wind_unit = if self.config().units == "imperial" { "mph" } else { "m/s" };
+        let wind_unit = if self.config().units == "imperial" {
+            "mph"
+        } else {
+            "m/s"
+        };
         let wind_direction = get_wind_direction_arrow(weather.wind_direction);
-        println!("💨 {}: {:.1} {} {}", "Wind".bold(), weather.wind_speed, wind_unit, wind_direction);
-        
+        println!(
+            "💨 {}: {:.1} {} {}",
+            "Wind".bold(),
+            weather.wind_speed,
+            wind_unit,
+            wind_direction
+        );
+
         // Humidity and pressure
         println!("💧 {}: {}%", "Humidity".bold(), weather.humidity);
         println!("🔄 {}: {} hPa", "Pressure".bold(), weather.pressure);
-        
+
         if self.animation_enabled {
             sleep(StdDuration::from_millis(300));
         }
-        
+
         // Sunrise and sunset
         let sunrise = format_local_time(&weather.sunrise, &location.timezone);
         let sunset = format_local_time(&weather.sunset, &location.timezone);
         println!("🌅 {}: {}", "Sunrise".bold(), sunrise);
         println!("🌇 {}: {}", "Sunset".bold(), sunset);
-        
+
         // UV index with color coding
         let uv_display = match weather.uv_index as u32 {
             0..=2 => format!("{:.1} (Low)", weather.uv_index).green(),
@@ -134,88 +185,123 @@ impl WeatherUI {
             _ => format!("{:.1} (Extreme)", weather.uv_index).red(),
         };
         println!("☀️ {}: {}", "UV Index".bold(), uv_display);
-        
+
         // Precipitation if available
         if let Some(rain) = weather.rain_last_hour {
             println!("🌧️ {}: {:.1} mm", "Rain (last hour)".bold(), rain);
         }
-        
+
         if let Some(snow) = weather.snow_last_hour {
             println!("❄️ {}: {:.1} mm", "Snow (last hour)".bold(), snow);
         }
-        
+
         println!();
-        
+
         Ok(())
     }
-    
+
     /// Display hourly forecast
-    pub fn show_hourly_forecast(&self, forecast: &[HourlyForecast], location: &Location) -> Result<()> {
-        println!("{}", "╔═══════════════════════════════════════════════════╗".bright_cyan());
-        println!("{}", "║             🕓 HOURLY FORECAST (24h) 🕓            ║".bright_cyan());
-        println!("{}", "╚═══════════════════════════════════════════════════╝".bright_cyan());
+    pub fn show_hourly_forecast(
+        &self,
+        forecast: &[HourlyForecast],
+        location: &Location,
+    ) -> Result<()> {
+        println!(
+            "{}",
+            "╔═══════════════════════════════════════════════════╗".bright_cyan()
+        );
+        println!(
+            "{}",
+            "║             🕓 HOURLY FORECAST (24h) 🕓            ║".bright_cyan()
+        );
+        println!(
+            "{}",
+            "╚═══════════════════════════════════════════════════╝".bright_cyan()
+        );
         println!();
-        
+
         if forecast.is_empty() {
             println!("No hourly forecast data available.");
             return Ok(());
         }
-        
+
         // Limit to next 24 hours for display
         let hours_to_show = std::cmp::min(forecast.len(), 24);
-        let temp_unit = if self.config().units == "imperial" { "°F" } else { "°C" };
-        
+        let temp_unit = if self.config().units == "imperial" {
+            "°F"
+        } else {
+            "°C"
+        };
+
         for (i, hour) in forecast.iter().take(hours_to_show).enumerate() {
             // Convert to local time
             let local_time = format_hour_only(&hour.timestamp, &location.timezone);
             let emoji = hour.main_condition.get_emoji();
-            
-            let mut line = format!("{}  {}: {:.1}{} {}", 
+
+            let mut line = format!(
+                "{}  {}: {:.1}{} {}",
                 emoji,
                 local_time.bold(),
                 hour.temperature,
                 temp_unit,
                 get_temp_bar(hour.temperature, self.config().units == "imperial")
             );
-            
+
             // Add precipitation chance if significant
             if hour.pop > 0.1 {
                 let pop_pct = (hour.pop * 100.0) as u8;
                 let rain_emoji = if pop_pct > 50 { "🌧️" } else { "💧" };
                 line.push_str(&format!(" {} {}%", rain_emoji, pop_pct));
             }
-            
+
             // Add wind if significant
             if hour.wind_speed > 5.0 {
                 let wind_dir = get_wind_direction_arrow(hour.wind_direction);
                 line.push_str(&format!(" 💨 {}", wind_dir));
             }
-            
+
             println!("{}", line);
-            
+
             if self.animation_enabled && i % 6 == 5 {
                 sleep(StdDuration::from_millis(200));
             }
         }
-        
+
         println!();
         Ok(())
     }
-    
+
     /// Display daily forecast
-    pub fn show_daily_forecast(&self, forecast: &[DailyForecast], location: &Location) -> Result<()> {
-        println!("{}", "╔═══════════════════════════════════════════════════╗".bright_cyan());
-        println!("{}", "║              📅 7-DAY FORECAST 📅                 ║".bright_cyan());
-        println!("{}", "╚═══════════════════════════════════════════════════╝".bright_cyan());
+    pub fn show_daily_forecast(
+        &self,
+        forecast: &[DailyForecast],
+        location: &Location,
+    ) -> Result<()> {
+        println!(
+            "{}",
+            "╔═══════════════════════════════════════════════════╗".bright_cyan()
+        );
+        println!(
+            "{}",
+            "║              📅 7-DAY FORECAST 📅                 ║".bright_cyan()
+        );
+        println!(
+            "{}",
+            "╚═══════════════════════════════════════════════════╝".bright_cyan()
+        );
         println!();
-        
+
         if forecast.is_empty() {
             println!("No daily forecast data available.");
             return Ok(());
         }
-        
-        let temp_unit = if self.config().units == "imperial" { "°F" } else { "°C" };
-        
+
+        let temp_unit = if self.config().units == "imperial" {
+            "°F"
+        } else {
+            "°C"
+        };
+
         for (i, day) in forecast.iter().enumerate() {
             // Format day name
             let day_name = if i == 0 {
@@ -225,40 +311,62 @@ impl WeatherUI {
             } else {
                 format_weekday(&day.date)
             };
-            
+
             let emoji = day.main_condition.get_emoji();
             let date_str = format_date_short(&day.date, &location.timezone);
-            
+
             println!("{} {} ({})", day_name.bold(), date_str, emoji);
-            
+
             // Temperature range with visualization
-            println!("   🌡️ {}/{}: {:.0}{} / {:.0}{} {}",
-                "High".bold(), "Low".bold(),
-                day.temp_max, temp_unit,
-                day.temp_min, temp_unit,
-                get_temp_range_bar(day.temp_min, day.temp_max, self.config().units == "imperial")
+            println!(
+                "   🌡️ {}/{}: {:.0}{} / {:.0}{} {}",
+                "High".bold(),
+                "Low".bold(),
+                day.temp_max,
+                temp_unit,
+                day.temp_min,
+                temp_unit,
+                get_temp_range_bar(
+                    day.temp_min,
+                    day.temp_max,
+                    self.config().units == "imperial"
+                )
             );
-            
+
             // Weather description
             let conditions = if let Some(desc) = day.conditions.first() {
                 desc.description.clone()
             } else {
                 day.main_condition.to_string()
             };
-            
-            println!("   ☁️ {}: {}", "Conditions".bold(), conditions.to_title_case());
-            
+
+            println!(
+                "   ☁️ {}: {}",
+                "Conditions".bold(),
+                conditions.to_title_case()
+            );
+
             // Precipitation
             if day.pop > 0.0 {
                 let pop_pct = (day.pop * 100.0) as u8;
                 println!("   🌧️ {}: {}%", "Precipitation Chance".bold(), pop_pct);
             }
-            
+
             // Wind info
-            let wind_unit = if self.config().units == "imperial" { "mph" } else { "m/s" };
+            let wind_unit = if self.config().units == "imperial" {
+                "mph"
+            } else {
+                "m/s"
+            };
             let wind_direction = get_wind_direction_arrow(day.wind_direction);
-            println!("   💨 {}: {:.1} {} {}", "Wind".bold(), day.wind_speed, wind_unit, wind_direction);
-            
+            println!(
+                "   💨 {}: {:.1} {} {}",
+                "Wind".bold(),
+                day.wind_speed,
+                wind_unit,
+                wind_direction
+            );
+
             // UV index
             let uv_display = match day.uv_index as u32 {
                 0..=2 => format!("{:.1} (Low)", day.uv_index).green(),
@@ -268,144 +376,218 @@ impl WeatherUI {
                 _ => format!("{:.1} (Extreme)", day.uv_index).red(),
             };
             println!("   ☀️ {}: {}", "UV Index".bold(), uv_display);
-            
+
             if i < forecast.len() - 1 {
                 println!("   ------------------------------");
             }
-            
+
             if self.animation_enabled {
                 sleep(StdDuration::from_millis(300));
             }
         }
-        
+
         println!();
         Ok(())
     }
-    
+
     /// Display full forecast (combines current, hourly, and daily)
     pub fn show_forecast(&self, forecast: &Forecast, location: &Location) -> Result<()> {
         if let Some(current) = &forecast.current {
             self.show_current_weather(current, location)?;
         }
-        
+
         if !forecast.hourly.is_empty() {
             self.show_hourly_forecast(&forecast.hourly, location)?;
         }
-        
+
         if !forecast.daily.is_empty() {
             self.show_daily_forecast(&forecast.daily, location)?;
         }
-        
+
         Ok(())
     }
-    
+
     /// Display location information
     pub fn show_location_info(&self, location: &Location) -> Result<()> {
-        println!("{}", "╔═══════════════════════════════════════════════════╗".bright_cyan());
-        println!("{}", "║               📍 LOCATION INFO 📍                 ║".bright_cyan());
-        println!("{}", "╚═══════════════════════════════════════════════════╝".bright_cyan());
+        println!(
+            "{}",
+            "╔═══════════════════════════════════════════════════╗".bright_cyan()
+        );
+        println!(
+            "{}",
+            "║               📍 LOCATION INFO 📍                 ║".bright_cyan()
+        );
+        println!(
+            "{}",
+            "╚═══════════════════════════════════════════════════╝".bright_cyan()
+        );
         println!();
-        
+
         println!("📍 {}: {}", "City".bold(), location.name);
-        
+
         if let Some(region) = &location.region {
             println!("🏙️ {}: {}", "Region".bold(), region);
         }
-        
+
         if let Some(state) = &location.state {
             println!("🗾 {}: {}", "State".bold(), state);
         }
-        
-        println!("🌎 {}: {} ({})", "Country".bold(), location.country, location.country_code);
-        println!("🧭 {}: {:.4}°, {:.4}°", "Coordinates".bold(), location.latitude, location.longitude);
+
+        println!(
+            "🌎 {}: {} ({})",
+            "Country".bold(),
+            location.country,
+            location.country_code
+        );
+        println!(
+            "🧭 {}: {:.4}°, {:.4}°",
+            "Coordinates".bold(),
+            location.latitude,
+            location.longitude
+        );
         println!("🕒 {}: {}", "Timezone".bold(), location.timezone);
-        
+
         println!();
-        
+
         if self.animation_enabled {
             sleep(StdDuration::from_millis(800));
         }
-        
+
         Ok(())
     }
-    
+
     /// Show weather recommendations based on conditions
     pub fn show_weather_recommendations(&self, weather: &CurrentWeather) -> Result<()> {
-        println!("{}", "╔═══════════════════════════════════════════════════╗".bright_cyan());
-        println!("{}", "║              💡 RECOMMENDATIONS 💡                ║".bright_cyan());
-        println!("{}", "╚═══════════════════════════════════════════════════╝".bright_cyan());
+        println!(
+            "{}",
+            "╔═══════════════════════════════════════════════════╗".bright_cyan()
+        );
+        println!(
+            "{}",
+            "║              💡 RECOMMENDATIONS 💡                ║".bright_cyan()
+        );
+        println!(
+            "{}",
+            "╚═══════════════════════════════════════════════════╝".bright_cyan()
+        );
         println!();
-        
+
         // General recommendation based on temperature
         let _temp = weather.temperature;
         let feels_like = weather.feels_like;
         let is_imperial = self.config().units == "imperial";
-        
+
         // Temperature thresholds (adjusted for units)
         let very_cold = if is_imperial { 32.0 } else { 0.0 };
         let cold = if is_imperial { 50.0 } else { 10.0 };
         let mild = if is_imperial { 68.0 } else { 20.0 };
         let warm = if is_imperial { 77.0 } else { 25.0 };
         let hot = if is_imperial { 86.0 } else { 30.0 };
-        
+
         // Clothing/comfort recommendations
         if feels_like < very_cold {
-            println!("🧣 {}", "Very cold! Wear heavy winter clothing, hat, gloves and scarf.".yellow());
+            println!(
+                "🧣 {}",
+                "Very cold! Wear heavy winter clothing, hat, gloves and scarf.".yellow()
+            );
         } else if feels_like < cold {
-            println!("🧥 {}", "Cold conditions. Wear a warm jacket and layers.".yellow());
+            println!(
+                "🧥 {}",
+                "Cold conditions. Wear a warm jacket and layers.".yellow()
+            );
         } else if feels_like < mild {
-            println!("🧥 {}", "Cool weather. A light jacket or sweater recommended.".bright_blue());
+            println!(
+                "🧥 {}",
+                "Cool weather. A light jacket or sweater recommended.".bright_blue()
+            );
         } else if feels_like < warm {
-            println!("👕 {}", "Pleasant temperature. Light clothing should be comfortable.".green());
+            println!(
+                "👕 {}",
+                "Pleasant temperature. Light clothing should be comfortable.".green()
+            );
         } else if feels_like < hot {
-            println!("👕 {}", "Warm weather. Light clothing and sun protection advised.".bright_yellow());
+            println!(
+                "👕 {}",
+                "Warm weather. Light clothing and sun protection advised.".bright_yellow()
+            );
         } else {
-            println!("🌡️ {}", "Hot weather! Stay hydrated and seek shade during peak hours.".bright_red());
+            println!(
+                "🌡️ {}",
+                "Hot weather! Stay hydrated and seek shade during peak hours.".bright_red()
+            );
         }
-        
+
         // UV index recommendations
         if weather.uv_index > 5.0 {
-            println!("🧴 {}", "High UV levels! Wear sunscreen, hat and sunglasses.".bright_yellow());
+            println!(
+                "🧴 {}",
+                "High UV levels! Wear sunscreen, hat and sunglasses.".bright_yellow()
+            );
         } else if weather.uv_index > 2.0 {
-            println!("🧴 {}", "Moderate UV levels. Sun protection advised during peak hours.".yellow());
+            println!(
+                "🧴 {}",
+                "Moderate UV levels. Sun protection advised during peak hours.".yellow()
+            );
         }
-        
+
         // Weather-specific recommendations
         match weather.main_condition {
             WeatherCondition::Rain | WeatherCondition::Drizzle => {
-                println!("☔ {}", "Rainy conditions. Bring an umbrella or raincoat.".bright_blue());
-            },
+                println!(
+                    "☔ {}",
+                    "Rainy conditions. Bring an umbrella or raincoat.".bright_blue()
+                );
+            }
             WeatherCondition::Thunderstorm => {
-                println!("⛈️ {}", "Thunderstorms in the area. Seek shelter and avoid open spaces.".bright_red());
-            },
+                println!(
+                    "⛈️ {}",
+                    "Thunderstorms in the area. Seek shelter and avoid open spaces.".bright_red()
+                );
+            }
             WeatherCondition::Snow => {
-                println!("❄️ {}", "Snowy conditions. Dress warmly and take care on roads.".bright_blue());
-            },
+                println!(
+                    "❄️ {}",
+                    "Snowy conditions. Dress warmly and take care on roads.".bright_blue()
+                );
+            }
             WeatherCondition::Fog | WeatherCondition::Mist => {
-                println!("🌫️ {}", "Reduced visibility due to fog. Drive carefully.".yellow());
-            },
+                println!(
+                    "🌫️ {}",
+                    "Reduced visibility due to fog. Drive carefully.".yellow()
+                );
+            }
             WeatherCondition::Clear => {
                 if weather.temperature > warm {
-                    println!("☀️ {}", "Clear and warm. Great day for outdoor activities!".green());
+                    println!(
+                        "☀️ {}",
+                        "Clear and warm. Great day for outdoor activities!".green()
+                    );
                 } else {
                     println!("☀️ {}", "Clear skies. Enjoy the weather!".green());
                 }
-            },
+            }
             WeatherCondition::Clouds => {
-                println!("☁️ {}", "Cloudy conditions. Good for outdoor activities without direct sun.".bright_blue());
-            },
+                println!(
+                    "☁️ {}",
+                    "Cloudy conditions. Good for outdoor activities without direct sun."
+                        .bright_blue()
+                );
+            }
             _ => {}
         }
-        
+
         // Wind recommendations
         if weather.wind_speed > 10.0 {
-            println!("💨 {}", "Strong winds. Secure loose objects and be careful outdoors.".yellow());
+            println!(
+                "💨 {}",
+                "Strong winds. Secure loose objects and be careful outdoors.".yellow()
+            );
         }
-        
+
         println!();
         Ok(())
     }
-    
+
     /// Show interactive menu
     pub fn show_interactive_menu(&self) -> Result<String> {
         let items = vec![
@@ -417,13 +599,13 @@ impl WeatherUI {
             "Change Units",
             "Exit",
         ];
-        
+
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Select an option:")
             .default(0)
             .items(&items)
             .interact_on_opt(&self.term)?;
-            
+
         let choice = match selection {
             Some(index) => match index {
                 0 => "current",
@@ -437,19 +619,19 @@ impl WeatherUI {
             },
             None => "exit",
         };
-        
+
         Ok(choice.to_string())
     }
-    
+
     /// Prompt for location
     pub fn prompt_for_location(&self) -> Result<String> {
         let location = Input::<String>::with_theme(&ColorfulTheme::default())
             .with_prompt("Enter city name or address")
             .interact_text()?;
-            
+
         Ok(location)
     }
-    
+
     /// Prompt for units
     pub fn prompt_for_units(&self) -> Result<String> {
         let items = vec![
@@ -457,13 +639,13 @@ impl WeatherUI {
             "Imperial (°F, mph)",
             "Standard (K, m/s)",
         ];
-        
+
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Select units:")
             .default(0)
             .items(&items)
             .interact_on_opt(&self.term)?;
-            
+
         let units = match selection {
             Some(index) => match index {
                 0 => "metric",
@@ -473,10 +655,10 @@ impl WeatherUI {
             },
             None => "metric",
         };
-        
+
         Ok(units.to_string())
     }
-    
+
     /// Create a custom spinner with cyberpunk style
     pub fn create_spinner(&self, message: &str) -> ProgressBar {
         let pb = ProgressBar::new_spinner();
@@ -489,7 +671,7 @@ impl WeatherUI {
         pb.set_message(message.bright_cyan().to_string());
         pb
     }
-    
+
     /// Create a custom spinner for weather icons
     pub fn create_weather_spinner(&self, message: &str) -> ProgressBar {
         let pb = ProgressBar::new_spinner();
@@ -502,20 +684,20 @@ impl WeatherUI {
         pb.set_message(message.bright_cyan().to_string());
         pb
     }
-    
+
     // Simplified animation methods - kept for compatibility but don't do anything fancy
-    
+
     /// Placeholder for matrix effect (now disabled)
     pub fn show_matrix_rain_effect(&self) -> Result<()> {
         Ok(())
     }
-    
+
     /// Show text (no pulse effect)
     pub fn show_pulse_text(&self, text: &str, _pulses: usize) -> Result<()> {
         println!("{}", text.bright_cyan());
         Ok(())
     }
-    
+
     /// Show text (no typing animation)
     pub fn typing_animation(&self, text: &str, _speed_factor: u64) -> Result<()> {
         println!("{}", text.bright_cyan());
@@ -535,7 +717,8 @@ fn format_weekday(date: &DateTime<Utc>) -> String {
         Weekday::Fri => "Friday",
         Weekday::Sat => "Saturday",
         Weekday::Sun => "Sunday",
-    }.to_string()
+    }
+    .to_string()
 }
 
 /// Format a date to short form
@@ -554,7 +737,7 @@ fn format_local_time(time: &DateTime<Utc>, timezone: &str) -> String {
 fn format_hour_only(time: &DateTime<Utc>, timezone: &str) -> String {
     let local_time = convert_to_local(time, timezone);
     let hour = local_time.hour();
-    
+
     if hour == 0 {
         "12 AM".to_string()
     } else if hour < 12 {
@@ -595,7 +778,7 @@ fn get_temp_bar(temp: f64, is_imperial: bool) -> ColoredString {
     } else {
         (0.0, 10.0, 20.0, 25.0, 30.0, 35.0)
     };
-    
+
     let bar = match temp {
         t if t < very_cold => "▁▁▁▁▁▁▁▁▁▁",
         t if t < cold => "▁▁▁▁▁▁▁▁▁▁",
@@ -605,7 +788,7 @@ fn get_temp_bar(temp: f64, is_imperial: bool) -> ColoredString {
         t if t < very_hot => "▁▁▁▁▁▁▁▁▁▁",
         _ => "▁▁▁▁▁▁▁▁▁▁",
     };
-    
+
     match temp {
         t if t < very_cold => bar.bright_blue(),
         t if t < cold => bar.blue(),
@@ -620,13 +803,13 @@ fn get_temp_bar(temp: f64, is_imperial: bool) -> ColoredString {
 /// Create a temperature range bar
 fn get_temp_range_bar(min: f64, max: f64, is_imperial: bool) -> ColoredString {
     let range = "────────────";
-    
+
     let (very_cold, cold, mild, _warm, hot) = if is_imperial {
         (32.0, 50.0, 68.0, 77.0, 86.0)
     } else {
         (0.0, 10.0, 20.0, 25.0, 30.0)
     };
-    
+
     if max < very_cold {
         range.bright_blue()
     } else if max < cold {
@@ -651,7 +834,7 @@ impl TitleCase for String {
     fn to_title_case(&self) -> String {
         let mut result = String::new();
         let mut capitalize_next = true;
-        
+
         for c in self.chars() {
             if c.is_whitespace() || c == '-' {
                 capitalize_next = true;
@@ -663,7 +846,7 @@ impl TitleCase for String {
                 result.push(c);
             }
         }
-        
+
         result
     }
 }

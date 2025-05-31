@@ -252,17 +252,17 @@ async fn run_full_weather(
         println!("{}", serde_json::to_string_pretty(&full_data)?);
     } else {
         ui.show_current_weather(&current, &location)?;
-        
+
         if config.animation_enabled {
             std::thread::sleep(Duration::from_millis(800));
         }
-        
+
         ui.show_hourly_forecast(&hourly, &location)?;
-        
+
         if config.animation_enabled {
             std::thread::sleep(Duration::from_millis(800));
         }
-        
+
         ui.show_daily_forecast(&daily, &location)?;
         ui.show_weather_recommendations(&current)?;
     }
@@ -277,11 +277,11 @@ async fn run_interactive_menu(
     config: WeatherConfig,
 ) -> Result<(), Box<dyn std::error::Error>> {
     ui.show_welcome_banner()?;
-    
+
     // Loop until exit
     loop {
         let choice = ui.show_interactive_menu()?;
-        
+
         match choice.as_str() {
             "current" => {
                 run_current_weather(
@@ -324,7 +324,7 @@ async fn run_interactive_menu(
                 let new_location = ui.prompt_for_location()?;
                 let mut new_config = config.clone();
                 new_config.location = Some(new_location);
-                
+
                 run_full_weather(
                     forecaster.clone(),
                     location_service.clone(),
@@ -338,7 +338,7 @@ async fn run_interactive_menu(
                 let new_units = ui.prompt_for_units()?;
                 let mut new_config = config.clone();
                 new_config.units = new_units;
-                
+
                 run_full_weather(
                     forecaster.clone(),
                     location_service.clone(),
