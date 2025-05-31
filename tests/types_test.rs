@@ -47,10 +47,18 @@ fn test_weather_condition_get_emoji() {
     assert_eq!(WeatherCondition::Clear.get_emoji(), "☀️");
     assert_eq!(WeatherCondition::Clouds.get_emoji(), "☁️");
     assert_eq!(WeatherCondition::Rain.get_emoji(), "🌧️");
+    assert_eq!(WeatherCondition::Drizzle.get_emoji(), "🌦️");
     assert_eq!(WeatherCondition::Thunderstorm.get_emoji(), "⛈️");
     assert_eq!(WeatherCondition::Snow.get_emoji(), "❄️");
     assert_eq!(WeatherCondition::Mist.get_emoji(), "🌫️");
     assert_eq!(WeatherCondition::Fog.get_emoji(), "🌫️");
+    assert_eq!(WeatherCondition::Smoke.get_emoji(), "🌫️");
+    assert_eq!(WeatherCondition::Haze.get_emoji(), "🌫️");
+    assert_eq!(WeatherCondition::Dust.get_emoji(), "🌫️");
+    assert_eq!(WeatherCondition::Sand.get_emoji(), "🌫️");
+    assert_eq!(WeatherCondition::Ash.get_emoji(), "🌫️");
+    assert_eq!(WeatherCondition::Squall.get_emoji(), "💨");
+    assert_eq!(WeatherCondition::Tornado.get_emoji(), "🌪️");
     assert_eq!(WeatherCondition::Unknown.get_emoji(), "❓");
 }
 
@@ -62,6 +70,15 @@ fn test_weather_condition_display() {
     assert_eq!(WeatherCondition::Drizzle.to_string(), "Drizzle");
     assert_eq!(WeatherCondition::Thunderstorm.to_string(), "Thunderstorm");
     assert_eq!(WeatherCondition::Snow.to_string(), "Snowy");
+    assert_eq!(WeatherCondition::Mist.to_string(), "Misty");
+    assert_eq!(WeatherCondition::Fog.to_string(), "Foggy");
+    assert_eq!(WeatherCondition::Smoke.to_string(), "Smoky");
+    assert_eq!(WeatherCondition::Haze.to_string(), "Hazy");
+    assert_eq!(WeatherCondition::Dust.to_string(), "Dusty");
+    assert_eq!(WeatherCondition::Sand.to_string(), "Sandy");
+    assert_eq!(WeatherCondition::Ash.to_string(), "Ashy");
+    assert_eq!(WeatherCondition::Squall.to_string(), "Squall");
+    assert_eq!(WeatherCondition::Tornado.to_string(), "Tornado");
     assert_eq!(WeatherCondition::Unknown.to_string(), "Unknown");
 }
 

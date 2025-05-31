@@ -68,6 +68,7 @@ impl WeatherCondition {
     /// This is different from FromStr trait implementation - it's a helper method
     /// that doesn't require Result handling
     #[allow(clippy::should_implement_trait)]
+    #[allow(dead_code)]
     pub fn from_str(condition: &str) -> Self {
         match condition.to_lowercase().as_str() {
             "clear" => WeatherCondition::Clear,

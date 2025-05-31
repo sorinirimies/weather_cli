@@ -247,9 +247,9 @@ impl WeatherForecaster {
 
         let mut forecasts = Vec::new();
 
-        for i in 0..times.len().min(48) {
+        for (i, time) in times.iter().take(48).enumerate() {
             // Limit to 48 hours (2 days)
-            let time_str = times[i].as_str().unwrap_or_default();
+            let time_str = time.as_str().unwrap_or_default();
             let timestamp = match DateTime::parse_from_rfc3339(time_str) {
                 Ok(dt) => dt.with_timezone(&Utc),
                 Err(_) => continue, // Skip invalid timestamps
@@ -274,7 +274,7 @@ impl WeatherForecaster {
 
             // Determine if it's day or night (simple approximation)
             let hour = timestamp.hour();
-            let is_day = hour >= 6 && hour < 18;
+            let is_day = (6..18).contains(&hour);
 
             // Get weather condition from WMO code
             let main_condition = self.wmo_code_to_condition(weather_code);
@@ -356,9 +356,9 @@ impl WeatherForecaster {
 
         let mut forecasts = Vec::new();
 
-        for i in 0..dates.len().min(7) {
+        for (i, date_value) in dates.iter().take(7).enumerate() {
             // Limit to 7 days (1 week)
-            let date_str = dates[i].as_str().unwrap_or_default();
+            let date_str = date_value.as_str().unwrap_or_default();
             let date = match DateTime::parse_from_rfc3339(&format!("{}T12:00:00Z", date_str)) {
                 Ok(dt) => dt.with_timezone(&Utc),
                 Err(_) => continue, // Skip invalid dates
@@ -368,6 +368,7 @@ impl WeatherForecaster {
                 .get(i)
                 .and_then(|v| v.as_str())
                 .unwrap_or_default();
+
             let sunset_str = sunset_times
                 .get(i)
                 .and_then(|v| v.as_str())
@@ -437,19 +438,19 @@ impl WeatherForecaster {
     /// Convert WMO weather code to our internal WeatherCondition
     pub fn wmo_code_to_condition(&self, code: u32) -> WeatherCondition {
         match code {
-            0 => WeatherCondition::Clear,              // Clear sky
-            1 | 2 | 3 => WeatherCondition::Clouds,     // Partly cloudy
-            45 | 48 => WeatherCondition::Fog,          // Fog
-            51 | 53 | 55 => WeatherCondition::Drizzle, // Drizzle
-            56 | 57 => WeatherCondition::Drizzle,      // Freezing Drizzle
-            61 | 63 | 65 => WeatherCondition::Rain,    // Rain
-            66 | 67 => WeatherCondition::Rain,         // Freezing Rain
-            71 | 73 | 75 => WeatherCondition::Snow,    // Snow
-            77 => WeatherCondition::Snow,              // Snow grains
-            80..=82 => WeatherCondition::Rain,         // Rain showers
-            85..=86 => WeatherCondition::Snow,         // Snow showers
-            95 => WeatherCondition::Thunderstorm,      // Thunderstorm
-            96 | 99 => WeatherCondition::Thunderstorm, // Thunderstorm with hail
+            0 => WeatherCondition::Clear,               // Clear sky
+            1..=3 => WeatherCondition::Clouds,          // Partly cloudy
+            45 | 48 => WeatherCondition::Fog,           // Fog
+            51..=55 => WeatherCondition::Drizzle,       // Drizzle
+            56 | 57 => WeatherCondition::Drizzle,       // Freezing Drizzle
+            61..=65 => WeatherCondition::Rain,          // Rain
+            66 | 67 => WeatherCondition::Rain,          // Freezing Rain
+            71..=75 => WeatherCondition::Snow,          // Snow
+            77 => WeatherCondition::Snow,               // Snow grains
+            80..=82 => WeatherCondition::Rain,          // Rain showers
+            85..=86 => WeatherCondition::Snow,          // Snow showers
+            95 => WeatherCondition::Thunderstorm,       // Thunderstorm
+            96 | 99 => WeatherCondition::Thunderstorm,  // Thunderstorm with hail
             _ => WeatherCondition::Unknown,
         }
     }

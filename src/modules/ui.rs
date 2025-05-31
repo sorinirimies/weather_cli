@@ -3,7 +3,7 @@ use chrono::{DateTime, Datelike, Timelike, Utc, Weekday};
 use colored::*;
 use console::Term;
 use dialoguer::{theme::ColorfulTheme, Input, Select};
-use indicatif::{ProgressBar, ProgressStyle};
+
 use std::thread::sleep;
 use std::time::Duration as StdDuration;
 
@@ -657,50 +657,9 @@ impl WeatherUI {
         Ok(units.to_string())
     }
 
-    /// Create a custom spinner with cyberpunk style
-    pub fn create_spinner(&self, message: &str) -> ProgressBar {
-        let pb = ProgressBar::new_spinner();
-        pb.set_style(
-            ProgressStyle::default_spinner()
-                .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈")
-                .template("{spinner:.cyan} {msg}")
-                .unwrap(),
-        );
-        pb.set_message(message.bright_cyan().to_string());
-        pb
-    }
 
-    /// Create a custom spinner for weather icons
-    pub fn create_weather_spinner(&self, message: &str) -> ProgressBar {
-        let pb = ProgressBar::new_spinner();
-        pb.set_style(
-            ProgressStyle::default_spinner()
-                .tick_chars("☁️🌨️🌧️🌦️🌥️⛅🌤️☀️")
-                .template("{spinner} {msg}")
-                .unwrap(),
-        );
-        pb.set_message(message.bright_cyan().to_string());
-        pb
-    }
 
-    // Simplified animation methods - kept for compatibility but don't do anything fancy
 
-    /// Placeholder for matrix effect (now disabled)
-    pub fn show_matrix_rain_effect(&self) -> Result<()> {
-        Ok(())
-    }
-
-    /// Show text (no pulse effect)
-    pub fn show_pulse_text(&self, text: &str, _pulses: usize) -> Result<()> {
-        println!("{}", text.bright_cyan());
-        Ok(())
-    }
-
-    /// Show text (no typing animation)
-    pub fn typing_animation(&self, text: &str, _speed_factor: u64) -> Result<()> {
-        println!("{}", text.bright_cyan());
-        Ok(())
-    }
 }
 
 // Helper functions for formatting

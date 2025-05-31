@@ -4,7 +4,7 @@ A feature-rich Rust-based command-line interface for weather forecasting with a 
 
 ![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-
+[![Release](https://github.com/sorinirimies/weather_cli/actions/workflows/release.yml/badge.svg)](https://github.com/sorinirimies/weather_cli/actions/workflows/release.yml)
 ## Features
 
 - Current weather conditions
