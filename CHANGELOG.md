@@ -2,6 +2,17 @@
 
 All notable changes to Weather Man will be documented in this file.
 
+## [0.0.7] - 2023-06-02
+
+### Features
+- Added next days forecast display with clean formatting
+- Added temperature trends with visual indicators
+- Added activity recommendations based on weather conditions
+- Added detailed day-by-day weather outlook
+- Fixed timezone conversion for accurate sunrise and sunset times
+- Made recommendations time-sensitive based on current hour
+- Improved overall UI with consistent formatting
+
 ## [0.1.0] - 2023-12-05
 
 ### Features

@@ -14,7 +14,7 @@ use modules::ui::WeatherUI;
 #[command(
     name = "weather_man",
     author = "Sorin Albu-Irimies",
-    version = "0.0.6",
+    version = "0.0.7",
     about = "A cyberpunk-themed weather forecasting CLI",
     long_about = "A feature-rich Rust-based CLI to get weather forecasts with cyberpunk-themed animations"
 )]

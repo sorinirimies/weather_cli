@@ -352,12 +352,11 @@ impl WeatherUI {
             // Format humidity
             let humidity = format!("{}%", day.humidity);
             
-            // Print day header
-            println!("{}", "─".repeat(50));
+            // Print box header
+            println!("┌─────────────────────────────────────────────────┐");
             
             // Print forecast with color highlighting based on conditions
-            let day_header = format!("{} {} {}", day_name.bold(), date_str, emoji);
-            println!("{}", day_header);
+            println!("│ {} {} {:<36}│", day_name.bold(), emoji, date_str);
             
             // Get weather description
             let weather_desc = if let Some(desc) = day.conditions.first() {
@@ -369,24 +368,25 @@ impl WeatherUI {
             // Print details in a clean format
             match day.main_condition {
                 WeatherCondition::Rain | WeatherCondition::Drizzle | WeatherCondition::Thunderstorm => {
-                    println!("  Weather: {}", weather_desc);
-                    println!("  Temp: {} / {}", temp_high, temp_low);
-                    println!("  Precipitation: {}", precip.bright_blue());
-                    println!("  Humidity: {}", humidity);
+                    println!("│  Weather: {:<40}│", weather_desc);
+                    println!("│  Temp: {} / {:<36}│", temp_high, temp_low);
+                    println!("│  Precipitation: {:<31}│", precip.bright_blue());
+                    println!("│  Humidity: {:<36}│", humidity);
                 },
                 WeatherCondition::Clear => {
-                    println!("  Weather: {}", weather_desc);
-                    println!("  Temp: {} / {}", temp_high.bright_yellow(), temp_low);
-                    println!("  Precipitation: {}", precip);
-                    println!("  Humidity: {}", humidity);
+                    println!("│  Weather: {:<40}│", weather_desc);
+                    println!("│  Temp: {} / {:<36}│", temp_high.bright_yellow(), temp_low);
+                    println!("│  Precipitation: {:<31}│", precip);
+                    println!("│  Humidity: {:<36}│", humidity);
                 },
                 _ => {
-                    println!("  Weather: {}", weather_desc);
-                    println!("  Temp: {} / {}", temp_high, temp_low);
-                    println!("  Precipitation: {}", precip);
-                    println!("  Humidity: {}", humidity);
+                    println!("│  Weather: {:<40}│", weather_desc);
+                    println!("│  Temp: {} / {:<36}│", temp_high, temp_low);
+                    println!("│  Precipitation: {:<31}│", precip);
+                    println!("│  Humidity: {:<36}│", humidity);
                 }
             }
+            println!("└─────────────────────────────────────────────────┘");
         }
         println!();
         
@@ -408,18 +408,18 @@ impl WeatherUI {
             
             // Create a simple visual indicator
             let temp_indicator = if day.temp_max > 28.0 {
-                "🔥 Hot".bright_red()
+                "🔥 Hot  ".bright_red()
             } else if day.temp_max > 22.0 {
-                "☀️ Warm".bright_yellow()
+                "☀️ Warm ".bright_yellow()
             } else if day.temp_max > 15.0 {
-                "😎 Mild".green()
+                "😎 Mild ".green()
             } else if day.temp_max > 5.0 {
-                "❄️ Cool".bright_blue()
+                "❄️ Cool ".bright_blue()
             } else {
-                "❄️ Cold".blue()
+                "❄️ Cold ".blue()
             };
             
-            println!("  • {:<12} {:<10} {:.0}{} / {:.0}{}", 
+            println!("  • {:<12} {:<9} {:.0}{} / {:.0}{}", 
                      label, temp_indicator, day.temp_max, temp_unit, day.temp_min, temp_unit);
         }
         println!();
@@ -486,11 +486,10 @@ impl WeatherUI {
             // Create a header box for each day
             println!("┌───────────────────────────────────────────────────┐");
             println!(
-                "│ {} {} ({}){}│",
+                "│ {:<15} {} {:<26}│",
                 day_name.bold().bright_cyan(),
-                date_str,
                 emoji,
-                " ".repeat(43 - day_name.len() - date_str.len() - 4)
+                date_str
             );
             println!("└───────────────────────────────────────────────────┘");
 
