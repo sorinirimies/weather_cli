@@ -64,7 +64,7 @@ pub enum WeatherCondition {
 
 impl WeatherCondition {
     /// Converts a string representation to a WeatherCondition
-    /// 
+    ///
     /// This is different from FromStr trait implementation - it's a helper method
     /// that doesn't require Result handling
     #[allow(clippy::should_implement_trait)]

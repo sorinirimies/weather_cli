@@ -446,8 +446,8 @@ impl WeatherForecaster {
             66 | 67 => WeatherCondition::Rain,         // Freezing Rain
             71 | 73 | 75 => WeatherCondition::Snow,    // Snow
             77 => WeatherCondition::Snow,              // Snow grains
-            80..=82 => WeatherCondition::Rain,     // Rain showers
-            85..=86 => WeatherCondition::Snow,          // Snow showers
+            80..=82 => WeatherCondition::Rain,         // Rain showers
+            85..=86 => WeatherCondition::Snow,         // Snow showers
             95 => WeatherCondition::Thunderstorm,      // Thunderstorm
             96 | 99 => WeatherCondition::Thunderstorm, // Thunderstorm with hail
             _ => WeatherCondition::Unknown,
