@@ -12,7 +12,7 @@ use modules::ui::WeatherUI;
 
 #[derive(Parser)]
 #[command(
-    name = "weather_cli",
+    name = "weather_man",
     author = "Sorin Albu-Irimies",
     version = "0.1.0",
     about = "A cyberpunk-themed weather forecasting CLI",

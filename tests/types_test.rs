@@ -1,4 +1,4 @@
-use weather_cli::modules::types::{DetailLevel, Location, WeatherCondition, WeatherConfig};
+use weather_man::modules::types::{DetailLevel, Location, WeatherCondition, WeatherConfig};
 
 #[test]
 fn test_weather_condition_from_str() {

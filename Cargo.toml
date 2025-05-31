@@ -1,5 +1,5 @@
 [package]
-name = "weather_cli"
+name = "weather_man"
 version = "0.1.0"
 edition = "2021"
 authors = ["Sorin Albu-Irimies <mihaiirimies@gmail.com>"]

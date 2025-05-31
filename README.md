@@ -1,10 +1,10 @@
-# Weather Man CLI
+# Weather Man
 
 A feature-rich Rust-based command-line interface for weather forecasting with a clean, minimalist design.
 
 ![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Release](https://github.com/sorinirimies/weather_cli/actions/workflows/release.yml/badge.svg)](https://github.com/sorinirimies/weather_cli/actions/workflows/release.yml)
+[![Release](https://github.com/sorinirimies/weather_man/actions/workflows/release.yml/badge.svg)](https://github.com/sorinirimies/weather_man/actions/workflows/release.yml)
 ## Features
 
 - Current weather conditions
@@ -22,45 +22,45 @@ A feature-rich Rust-based command-line interface for weather forecasting with a 
 ### From crates.io
 
 ```
-cargo install weather_cli
+cargo install weather_man
 ```
 
 ### From source
 
 ```
-git clone https://github.com/yourusername/weather_cli.git
-cd weather_cli
+git clone https://github.com/yourusername/weather_man.git
+cd weather_man
 cargo build --release
 ```
 
-The executable will be available at `target/release/weather_cli`.
+The executable will be available at `target/release/weather_man`.
 
 ## Usage
 
 ```
 # Current weather at auto-detected location
-weather_cli
+weather_man
 
 # Specify a location
-weather_cli --location "New York"
+weather_man --location "New York"
 
 # Daily forecast
-weather_cli --mode daily
+weather_man --mode daily
 
 # Hourly forecast
-weather_cli --mode hourly
+weather_man --mode hourly
 
 # Full weather report
-weather_cli --mode full
+weather_man --mode full
 
 # Interactive mode
-weather_cli --mode interactive
+weather_man --mode interactive
 
 # Use imperial units
-weather_cli --units imperial
+weather_man --units imperial
 
 # Output as JSON (for scripting)
-weather_cli --json
+weather_man --json
 ```
 
 ## Command-line Options

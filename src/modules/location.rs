@@ -60,7 +60,7 @@ impl LocationService {
         let response = self
             .client
             .get(&url)
-            .header("User-Agent", "weather_cli/0.1.0")
+            .header("User-Agent", "weather_man/0.1.0")
             .send()
             .await?;
 
@@ -105,7 +105,7 @@ impl LocationService {
         let response = self
             .client
             .get(&url)
-            .header("User-Agent", "weather_cli/0.1.0")
+            .header("User-Agent", "weather_man/0.1.0")
             .send()
             .await?;
 
@@ -147,7 +147,7 @@ impl LocationService {
     /// Get timezone from coordinates
     async fn get_timezone(&self, lat: f64, lon: f64) -> Result<String> {
         let url = format!(
-            "http://api.geonames.org/timezoneJSON?lat={}&lng={}&username=weather_cli",
+            "http://api.geonames.org/timezoneJSON?lat={}&lng={}&username=weather_man",
             lat, lon
         );
 

@@ -1,4 +1,4 @@
-// Modules for the weather_cli project
+// Modules for the weather_man project
 pub mod forecaster;
 pub mod location;
 pub mod types;
