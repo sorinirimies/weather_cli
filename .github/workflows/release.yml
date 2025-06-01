@@ -67,16 +67,16 @@ jobs:
           # Extract version from tag (remove 'v' prefix)
           VERSION=${GITHUB_REF_NAME#v}
           echo "Updating version to: $VERSION"
-          
+
           # Update Cargo.toml version
           sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
-          
+
           # Update full changelog with git-cliff
           git-cliff --config cliff.toml --latest --output CHANGELOG.md
-          
+
           # Generate release notes with git-cliff
           LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          
+
           # Generate release changelog using git-cliff
           if [ -n "$LAST_TAG" ]; then
             # Generate changelog between tags
@@ -85,13 +85,13 @@ jobs:
             # Generate changelog for first release
             git-cliff --config cliff.toml --tag ${{ github.ref_name }} --strip header > CLIFF_CHANGES.md
           fi
-          
+
           # Create the release note template
           echo "# Weather CLI ${VERSION}" > RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
           echo "## 🚀 What's New" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
-          
+
           if [ -n "$LAST_TAG" ]; then
             echo "### 📝 Changes since ${LAST_TAG}:" >> RELEASE_CHANGELOG.md
             echo "" >> RELEASE_CHANGELOG.md
@@ -99,28 +99,28 @@ jobs:
             echo "### 🎉 Initial Release" >> RELEASE_CHANGELOG.md
             echo "" >> RELEASE_CHANGELOG.md
           fi
-          
+
           # Add the git-cliff generated changes to the release notes
           cat CLIFF_CHANGES.md >> RELEASE_CHANGELOG.md
-          
+
           # Add installation and quick start info
           echo "" >> RELEASE_CHANGELOG.md
           echo "## 📦 Installation" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
           echo "```bash" >> RELEASE_CHANGELOG.md
-          echo "cargo install weather_cli" >> RELEASE_CHANGELOG.md
+          echo "cargo install weather_man" >> RELEASE_CHANGELOG.md
           echo "```" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
           echo "## 🚀 Quick Start" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
           echo "```bash" >> RELEASE_CHANGELOG.md
           echo "# Get current weather" >> RELEASE_CHANGELOG.md
-          echo "weather_cli" >> RELEASE_CHANGELOG.md
+          echo "weather_man" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
           echo "# Get forecast for a specific location" >> RELEASE_CHANGELOG.md
-          echo "weather_cli -m forecast -l \"New York\"" >> RELEASE_CHANGELOG.md
+          echo "weather_man -m forecast -l \"New York\"" >> RELEASE_CHANGELOG.md
           echo "```" >> RELEASE_CHANGELOG.md
-          
+
           # Show the generated release notes
           echo "Generated release notes:"
           cat RELEASE_CHANGELOG.md
@@ -133,14 +133,14 @@ jobs:
 
       - name: Package binary (Linux)
         run: |
-          tar -C target/release -czvf weather_cli-${{ github.ref_name }}-linux-x86_64.tar.gz weather_cli
+          tar -C target/release -czvf weather_man-${{ github.ref_name }}-linux-x86_64.tar.gz weather_man
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           body_path: RELEASE_CHANGELOG.md
           files: |
-            weather_cli-${{ github.ref_name }}-linux-x86_64.tar.gz
+            weather_man-${{ github.ref_name }}-linux-x86_64.tar.gz
             LICENSE
             README.md
             CHANGELOG.md
