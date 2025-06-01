@@ -2,7 +2,8 @@
 
 A feature-rich Rust-based command-line interface for weather forecasting with a clean, minimalist design.
 
-![Version](https://img.shields.io/badge/version-0.0.6-blue.svg)
+[![Crates.io](https://img.shields.io/crates/v/weather_man.svg)](https://crates.io/crates/weather_man)
+![Version](https://img.shields.io/badge/version-0.1.6-blue.svg)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Release](https://github.com/sorinirimies/weather_man/actions/workflows/release.yml/badge.svg)](https://github.com/sorinirimies/weather_man/actions/workflows/release.yml)
 ## Features
@@ -25,10 +26,12 @@ A feature-rich Rust-based command-line interface for weather forecasting with a 
 cargo install weather_man
 ```
 
+You can also check out the [weather_man package on crates.io](https://crates.io/crates/weather_man) for more information.
+
 ### From source
 
 ```
-git clone https://github.com/yourusername/weather_man.git
+git clone https://github.com/sorinirimies/weather_man.git
 cd weather_man
 cargo build --release
 ```
