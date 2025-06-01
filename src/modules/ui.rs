@@ -832,13 +832,13 @@ impl WeatherUI {
         // Get the current hour to determine time of day
         let now = Utc::now();
         let hour = now.hour();
-
+        
         // Define time periods
-        let is_morning = hour >= 5 && hour < 12;
-        let is_afternoon = hour >= 12 && hour < 17;
-        let is_evening = hour >= 17 && hour < 21;
-        let is_night = hour >= 21 || hour < 5;
-
+        let is_morning = (5..12).contains(&hour);
+        let is_afternoon = (12..17).contains(&hour);
+        let is_evening = (17..21).contains(&hour);
+        let is_night = !(5..21).contains(&hour);
+        
         let time_of_day = if is_morning {
             "morning"
         } else if is_afternoon {
@@ -1195,7 +1195,7 @@ fn get_wind_direction_arrow(degrees: u16) -> &'static str {
     }
 }
 
-/// Create a temperature bar visualization
+// /// Create a temperature bar visualization
 // Function has been removed as it's no longer used
 
 /// Create a temperature range bar
