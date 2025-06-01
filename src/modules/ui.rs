@@ -832,13 +832,13 @@ impl WeatherUI {
         // Get the current hour to determine time of day
         let now = Utc::now();
         let hour = now.hour();
-        
+
         // Define time periods
         let is_morning = (5..12).contains(&hour);
         let is_afternoon = (12..17).contains(&hour);
         let is_evening = (17..21).contains(&hour);
         let is_night = !(5..21).contains(&hour);
-        
+
         let time_of_day = if is_morning {
             "morning"
         } else if is_afternoon {
