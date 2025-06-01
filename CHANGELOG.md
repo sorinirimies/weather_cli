@@ -2,7 +2,7 @@
 
 All notable changes to Weather Man will be documented in this file.
 
-## [0.1.6] - 2023-06-02
+## [0.2.1] - 2023-06-02
 
 ### Documentation
 - Added crates.io link to README
