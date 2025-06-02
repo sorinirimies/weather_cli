@@ -87,7 +87,7 @@ jobs:
           fi
 
           # Create the release note template
-          echo "# Weather CLI ${VERSION}" > RELEASE_CHANGELOG.md
+          echo "# Weather Man ${VERSION}" > RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
           echo "## 🚀 What's New" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
@@ -107,19 +107,19 @@ jobs:
           echo "" >> RELEASE_CHANGELOG.md
           echo "## 📦 Installation" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
-          echo "```bash" >> RELEASE_CHANGELOG.md
+          echo "\`\`\`bash" >> RELEASE_CHANGELOG.md
           echo "cargo install weather_man" >> RELEASE_CHANGELOG.md
-          echo "```" >> RELEASE_CHANGELOG.md
+          echo "\`\`\`" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
           echo "## 🚀 Quick Start" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
-          echo "```bash" >> RELEASE_CHANGELOG.md
+          echo "\`\`\`bash" >> RELEASE_CHANGELOG.md
           echo "# Get current weather" >> RELEASE_CHANGELOG.md
           echo "weather_man" >> RELEASE_CHANGELOG.md
           echo "" >> RELEASE_CHANGELOG.md
           echo "# Get forecast for a specific location" >> RELEASE_CHANGELOG.md
           echo "weather_man -m forecast -l \"New York\"" >> RELEASE_CHANGELOG.md
-          echo "```" >> RELEASE_CHANGELOG.md
+          echo "\`\`\`" >> RELEASE_CHANGELOG.md
 
           # Show the generated release notes
           echo "Generated release notes:"
