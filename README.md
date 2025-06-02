@@ -38,6 +38,20 @@ cargo build --release
 
 The executable will be available at `target/release/weather_man`.
 
+### Optimized builds
+
+For maximum performance, you can build a fully optimized version:
+
+```
+# Build for your current system with native CPU optimizations
+./scripts/build_release.sh
+
+# Or specify a target platform
+./scripts/build_release.sh x86_64-unknown-linux-gnu
+```
+
+The optimized executable and distributable package will be created in the `dist` directory.
+
 ## Usage
 
 ```
@@ -87,7 +101,14 @@ weather_man --json
 ### Building
 
 ```
+# Debug build
 cargo build
+
+# Release build
+cargo build --release
+
+# Optimized release build
+./scripts/build_release.sh
 ```
 
 ### Running Tests
@@ -109,7 +130,13 @@ git cliff --output CHANGELOG.md
 1. Update version in Cargo.toml
 2. Create a new tag: `git tag -a v0.1.0 -m "Release v0.1.0"`
 3. Push the tag: `git push origin v0.1.0`
-4. GitHub Actions will automatically generate the changelog and publish to crates.io
+4. GitHub Actions will automatically:
+   - Generate the changelog
+   - Build optimized binaries for multiple platforms (Linux, macOS, Windows)
+   - Create a GitHub release with all artifacts
+   - Publish to crates.io
+
+You can download pre-built optimized binaries for your platform from the [Releases page](https://github.com/sorinirimies/weather_man/releases).
 
 ## Contributing
 

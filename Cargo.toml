@@ -43,3 +43,10 @@ tokio-test = "0.4"
 mockito = "1.1"
 assert_cmd = "2.0"
 predicates = "3.0"
+
+[profile.release]
+opt-level = 3        # Maximum optimization
+lto = true           # Enable link-time optimization
+codegen-units = 1    # Use a single codegen unit for better optimization
+panic = "abort"      # Abort on panic for smaller binary size
+strip = true         # Strip symbols from binary

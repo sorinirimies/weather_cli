@@ -1,0 +1,36 @@
+[build]
+# Optimize dependencies too
+rustflags = ["-C", "target-cpu=native", "-C", "codegen-units=1", "-C", "debuginfo=0"]
+
+[profile.release]
+strip = true        # Strip symbols from binary
+opt-level = 3       # Optimize for size and speed
+codegen-units = 1   # Use 1 codegen unit for better optimization
+lto = true          # Enable Link Time Optimization
+panic = "abort"     # Abort on panic (smaller code size)
+
+[profile.bench]
+strip = true        # Strip symbols from binary
+opt-level = 3       # Optimize for size and speed
+codegen-units = 1   # Use 1 codegen unit for better optimization
+lto = true          # Enable Link Time Optimization
+
+[target.'cfg(all())']
+rustflags = [
+  "-C", "link-arg=-fuse-ld=lld",
+  "-C", "target-cpu=native",
+]
+
+[target.x86_64-unknown-linux-gnu]
+linker = "clang"
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+[target.x86_64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+[target.x86_64-pc-windows-msvc]
+linker = "rust-lld"
+rustflags = ["-C", "target-feature=+crt-static"]
