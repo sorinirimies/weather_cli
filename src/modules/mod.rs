@@ -1,7 +1,9 @@
 // Modules for the weather_man project
+pub mod canvas;
 pub mod forecaster;
 pub mod location;
 pub mod types;
+pub mod tui;
 pub mod ui;
 pub mod utils;
 

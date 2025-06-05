@@ -1,6 +1,6 @@
 # Weather Man
 
-A feature-rich Rust-based command-line interface for weather forecasting with a clean, minimalist design.
+A feature-rich Rust-based command-line interface for weather forecasting with a clean, minimalist design and interactive charts with calendar view.
 
 [![Crates.io](https://img.shields.io/crates/v/weather_man.svg)](https://crates.io/crates/weather_man)
 ![Version](https://img.shields.io/badge/version-0.2.1-blue.svg)
@@ -16,6 +16,13 @@ A feature-rich Rust-based command-line interface for weather forecasting with a 
 - Weather recommendations
 - Support for metric/imperial units
 - Interactive mode with menu-based navigation
+- Interactive charts with calendar view
+  - Hourly temperature trends
+  - Hourly precipitation probability
+  - Daily temperature ranges
+  - Daily precipitation forecast
+  - Calendar view for historical and future dates
+- Automatic chart display after weather information
 - JSON output option for scripting
 
 ## Installation
@@ -59,6 +66,11 @@ weather_man --mode full
 # Interactive mode
 weather_man --mode interactive
 
+# Disable charts display (text output only)
+weather_man --no-charts
+
+# Charts are shown by default after displaying weather information
+
 # Use imperial units
 weather_man --units imperial
 
@@ -70,12 +82,29 @@ weather_man --json
 
 | Option | Description |
 |--------|-------------|
-| `--mode`, `-m` | Display mode: current, forecast, hourly, daily, full, interactive |
+| `--mode`, `-m` | Display mode: current, forecast, hourly, daily, full, interactive, charts |
 | `--location`, `-l` | Location to check weather for (default: auto-detect) |
 | `--units`, `-u` | Units to display: metric, imperial, standard (default: metric) |
 | `--detail`, `-d` | Level of detail: basic, standard, detailed, debug |
 | `--json`, `-j` | Output results as JSON |
 | `--no-animations`, `-a` | Disable animations |
+| `--no-charts` | Disable charts display (text output only) |
+
+## Charts
+
+Weather Man includes interactive charts for visualizing weather data:
+
+1. **Hourly Temperature Chart**: Line chart showing temperature trends over the next 24 hours
+2. **Hourly Precipitation Chart**: Bar chart showing precipitation probability for each hour
+3. **Daily Temperature Chart**: Line chart showing min/max temperature ranges for the next 7 days
+4. **Daily Precipitation Chart**: Bar chart showing daily precipitation probability with condition information
+
+Charts are displayed automatically after viewing weather information without requiring any user input.
+
+Navigate between charts using:
+- Arrow keys or Tab: Switch between chart tabs
+- Keys 1-4: Jump directly to specific charts
+- Q or Esc: Exit charts view
 
 ## Development
 

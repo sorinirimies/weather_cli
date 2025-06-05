@@ -27,7 +27,7 @@ urlencoding = "2.1"
 dirs = "5.0"
 strum = "0.24"
 strum_macros = "0.24"
-tui = { version = "0.19", default-features = true }
+ratatui = { version = "0.23", default-features = true }
 unicode-width = "0.1"
 geo = "0.24"
 geocoding = "0.4"

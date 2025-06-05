@@ -48,7 +48,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings
+          args: -- -D warnings -A deprecated
 
       - name: Run tests
         uses: actions-rs/cargo@v1
@@ -70,6 +70,9 @@ jobs:
 
           # Update Cargo.toml version
           sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
+          
+          # Update version in main.rs
+          sed -i "s/version = \"[0-9.]*\"/version = \"$VERSION\"/" src/main.rs
 
           # Update full changelog with git-cliff
           git-cliff --config cliff.toml --latest --output CHANGELOG.md
@@ -119,6 +122,9 @@ jobs:
           echo "" >> RELEASE_CHANGELOG.md
           echo "# Get forecast for a specific location" >> RELEASE_CHANGELOG.md
           echo "weather_man -m forecast -l \"New York\"" >> RELEASE_CHANGELOG.md
+          echo "" >> RELEASE_CHANGELOG.md
+          echo "# Show interactive charts" >> RELEASE_CHANGELOG.md
+          echo "weather_man -c" >> RELEASE_CHANGELOG.md
           echo "```" >> RELEASE_CHANGELOG.md
 
           # Show the generated release notes

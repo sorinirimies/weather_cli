@@ -12,6 +12,7 @@ pub struct WeatherConfig {
     pub json_output: bool,
     pub animation_enabled: bool,
     pub detail_level: DetailLevel,
+    pub no_charts: bool,
 }
 
 impl Default for WeatherConfig {
@@ -22,6 +23,7 @@ impl Default for WeatherConfig {
             json_output: false,
             animation_enabled: true,
             detail_level: DetailLevel::Standard,
+            no_charts: false,
         }
     }
 }

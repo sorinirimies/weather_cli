@@ -1028,21 +1028,102 @@ impl WeatherUI {
             );
         }
 
+        // Show interactive weather canvas scene
+        if self.animation_enabled && !self.json_output {
+            println!("\n🎨 Weather Scene Visualization");
+            if let Err(e) = self.show_weather_canvas_scene(weather) {
+                println!("⚠️  Weather canvas unavailable: {}", e);
+            }
+        }
+
         println!();
         Ok(())
     }
 
+    /// Display weather canvas scene in terminal
+    pub fn show_weather_canvas_scene(&self, weather: &CurrentWeather) -> Result<()> {
+        use std::io;
+        use crossterm::{
+            terminal::{enable_raw_mode, disable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+            execute,
+            event::{self, Event, KeyCode, KeyEventKind},
+        };
+        use ratatui::{
+            backend::CrosstermBackend,
+            Terminal,
+        };
+
+        println!("\n🌤️  Weather Scene Visualization");
+        println!("Press any key to view interactive weather scene, or 's' to skip...");
+        
+        // Check if user wants to see the canvas
+        if let Ok(Event::Key(key)) = event::read() {
+            if key.code == KeyCode::Char('s') || key.code == KeyCode::Char('S') {
+                return Ok(());
+            }
+        }
+
+        // Setup terminal for canvas display
+        enable_raw_mode()?;
+        let mut stdout = io::stdout();
+        execute!(stdout, EnterAlternateScreen)?;
+        let backend = CrosstermBackend::new(stdout);
+        let mut terminal = Terminal::new(backend)?;
+
+        let result = terminal.draw(|f| {
+            let area = f.size();
+            let is_day = {
+                use chrono::{Local, Timelike};
+                let hour = Local::now().hour();
+                hour >= 6 && hour < 18
+            };
+            
+            crate::modules::canvas::render_weather_canvas(
+                &weather.main_condition,
+                weather.temperature,
+                weather.humidity,
+                weather.wind_speed,
+                is_day,
+                f,
+                area,
+            );
+        });
+
+        // Wait for user input to exit
+        if result.is_ok() {
+            loop {
+                if let Ok(Event::Key(key)) = event::read() {
+                    if key.kind == KeyEventKind::Press {
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Restore terminal
+        disable_raw_mode()?;
+        execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+        
+        println!("Weather scene closed. Continuing with recommendations...\n");
+        Ok(())
+    }
+
     /// Show interactive menu
-    pub fn show_interactive_menu(&self) -> Result<String> {
-        let items = vec![
+    pub fn show_interactive_menu(&self, show_charts: bool) -> Result<String> {
+        let mut items = vec![
             "Current Weather",
             "Hourly Forecast",
             "Daily Forecast",
             "Full Weather Report",
+            "Interactive Charts",
             "Change Location",
             "Change Units",
             "Exit",
         ];
+        
+        if !show_charts {
+            items.remove(4); // Remove "Interactive Charts" if charts are disabled
+        }
 
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Select an option:")
@@ -1051,21 +1132,39 @@ impl WeatherUI {
             .interact_on_opt(&self.term)?;
 
         let choice = match selection {
-            Some(index) => match index {
-                0 => "current",
-                1 => "hourly",
-                2 => "daily",
-                3 => "full",
-                4 => "change_location",
-                5 => "change_units",
-                6 => "exit",
-                _ => "exit",
+            Some(index) => {
+                if show_charts {
+                    match index {
+                        0 => "current",
+                        1 => "hourly",
+                        2 => "daily",
+                        3 => "full",
+                        4 => "charts",
+                        5 => "change_location",
+                        6 => "change_units",
+                        7 => "exit",
+                        _ => "exit",
+                    }
+                } else {
+                    match index {
+                        0 => "current",
+                        1 => "hourly",
+                        2 => "daily",
+                        3 => "full",
+                        4 => "change_location",
+                        5 => "change_units",
+                        6 => "exit",
+                        _ => "exit",
+                    }
+                }
             },
             None => "exit",
         };
 
         Ok(choice.to_string())
     }
+
+
 
     /// Prompt for location
     pub fn prompt_for_location(&self) -> Result<String> {
@@ -1151,7 +1250,7 @@ fn format_hour_only(time: &DateTime<Utc>, timezone: &str) -> String {
 }
 
 /// Convert UTC time to local time in the specified timezone
-fn convert_to_local(time: &DateTime<Utc>, timezone: &str) -> DateTime<Utc> {
+pub fn convert_to_local(time: &DateTime<Utc>, timezone: &str) -> DateTime<Utc> {
     // This is a simplified version - in a real app, use a proper timezone library
     // For now, we'll parse the timezone offset from the timezone string
     let hours_offset = match timezone {
@@ -1264,6 +1363,7 @@ impl WeatherUI {
             json_output: self.json_output,
             animation_enabled: self.animation_enabled,
             detail_level: crate::modules::types::DetailLevel::Standard,
+            no_charts: false,
         }
     }
 }
