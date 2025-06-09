@@ -1042,20 +1042,19 @@ impl WeatherUI {
 
     /// Display weather canvas scene in terminal
     pub fn show_weather_canvas_scene(&self, weather: &CurrentWeather) -> Result<()> {
-        use std::io;
         use crossterm::{
-            terminal::{enable_raw_mode, disable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
-            execute,
             event::{self, Event, KeyCode, KeyEventKind},
+            execute,
+            terminal::{
+                disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen,
+            },
         };
-        use ratatui::{
-            backend::CrosstermBackend,
-            Terminal,
-        };
+        use ratatui::{backend::CrosstermBackend, Terminal};
+        use std::io;
 
         println!("\n🌤️  Weather Scene Visualization");
         println!("Press any key to view interactive weather scene, or 's' to skip...");
-        
+
         // Check if user wants to see the canvas
         if let Ok(Event::Key(key)) = event::read() {
             if key.code == KeyCode::Char('s') || key.code == KeyCode::Char('S') {
@@ -1077,7 +1076,7 @@ impl WeatherUI {
                 let hour = Local::now().hour();
                 hour >= 6 && hour < 18
             };
-            
+
             crate::modules::canvas::render_weather_canvas(
                 &weather.main_condition,
                 weather.temperature,
@@ -1103,7 +1102,7 @@ impl WeatherUI {
         // Restore terminal
         disable_raw_mode()?;
         execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-        
+
         println!("Weather scene closed. Continuing with recommendations...\n");
         Ok(())
     }
@@ -1120,7 +1119,7 @@ impl WeatherUI {
             "Change Units",
             "Exit",
         ];
-        
+
         if !show_charts {
             items.remove(4); // Remove "Interactive Charts" if charts are disabled
         }
@@ -1157,14 +1156,12 @@ impl WeatherUI {
                         _ => "exit",
                     }
                 }
-            },
+            }
             None => "exit",
         };
 
         Ok(choice.to_string())
     }
-
-
 
     /// Prompt for location
     pub fn prompt_for_location(&self) -> Result<String> {

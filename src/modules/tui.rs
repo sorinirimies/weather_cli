@@ -1,4 +1,6 @@
-use crate::modules::types::{DailyForecast, HourlyForecast, Location, WeatherConfig, WeatherCondition};
+use crate::modules::types::{
+    DailyForecast, HourlyForecast, Location, WeatherCondition, WeatherConfig,
+};
 use crate::modules::ui::convert_to_local;
 use anyhow::Result;
 use crossterm::{
@@ -8,7 +10,7 @@ use crossterm::{
 };
 
 use ratatui::{
-    backend::{CrosstermBackend},
+    backend::CrosstermBackend,
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
     text::{Line, Span, Text},
@@ -89,10 +91,7 @@ impl WeatherTui {
             config,
         };
 
-        Ok(Self {
-            state,
-            terminal,
-        })
+        Ok(Self { state, terminal })
     }
 
     /// Run the TUI application
@@ -104,7 +103,7 @@ impl WeatherTui {
             let daily_data = self.state.daily_data.clone();
             let location = self.state.location.clone();
             let config = self.state.config.clone();
-            
+
             self.terminal.draw(|f| {
                 let chunks = Layout::default()
                     .direction(Direction::Vertical)
@@ -119,14 +118,14 @@ impl WeatherTui {
                         .as_ref(),
                     )
                     .split(f.size());
-                
+
                 // Render title
                 let units_text = match config.units.as_str() {
                     "metric" => "°C",
                     "imperial" => "°F",
                     _ => "K",
                 };
-                
+
                 let title = Paragraph::new(Text::from(vec![Line::from(vec![
                     Span::styled(
                         format!("Weather Man - {}", location.name),
@@ -136,15 +135,14 @@ impl WeatherTui {
                     ),
                     Span::raw(" "),
                     Span::styled(
-                        format!(
-                            "[{}, {}]",
-                            location.country,
-                            location.country_code
-                        ),
+                        format!("[{}, {}]", location.country, location.country_code),
                         Style::default().fg(Color::Gray),
                     ),
                     Span::raw(" "),
-                    Span::styled(format!("({})", units_text), Style::default().fg(Color::Yellow)),
+                    Span::styled(
+                        format!("({})", units_text),
+                        Style::default().fg(Color::Yellow),
+                    ),
                 ])]))
                 .block(
                     Block::default()
@@ -152,9 +150,9 @@ impl WeatherTui {
                         .border_type(BorderType::Rounded)
                         .style(Style::default().fg(Color::Cyan)),
                 );
-                
+
                 f.render_widget(title, chunks[0]);
-                
+
                 // Render tabs
                 let titles = [
                     TuiTab::CurrentWeather,
@@ -175,7 +173,7 @@ impl WeatherTui {
                     ])
                 })
                 .collect::<Vec<_>>();
-                
+
                 let tabs = Tabs::new(titles)
                     .block(
                         Block::default()
@@ -195,9 +193,9 @@ impl WeatherTui {
                             .fg(Color::Cyan)
                             .add_modifier(Modifier::BOLD),
                     );
-                
+
                 f.render_widget(tabs, chunks[1]);
-                
+
                 // Render content based on selected tab
                 match active_tab {
                     TuiTab::CurrentWeather => {
@@ -212,7 +210,7 @@ impl WeatherTui {
                         render_weather_calendar(&daily_data, &location, f, chunks[2]);
                     }
                 }
-                
+
                 // Render help
                 let help_text = Text::from(vec![Line::from(vec![
                     Span::styled("Keys: ", Style::default().fg(Color::Cyan)),
@@ -225,7 +223,7 @@ impl WeatherTui {
                     Span::styled("ESC", Style::default().fg(Color::Yellow)),
                     Span::raw(" Exit weather view"),
                 ])]);
-                
+
                 let help = Paragraph::new(help_text)
                     .block(
                         Block::default()
@@ -234,7 +232,7 @@ impl WeatherTui {
                             .style(Style::default().fg(Color::Cyan)),
                     )
                     .wrap(Wrap { trim: true });
-                
+
                 f.render_widget(help, chunks[3]);
             })?;
 
@@ -285,8 +283,6 @@ impl WeatherTui {
     // The UI drawing methods have been moved into the run() function to avoid borrowing issues
 }
 
-
-
 /// Render a weather calendar showing conditions for a range of dates
 fn render_weather_calendar<B: ratatui::backend::Backend>(
     daily_data: &[DailyForecast],
@@ -296,18 +292,21 @@ fn render_weather_calendar<B: ratatui::backend::Backend>(
 ) {
     // Create a simple text-based calendar view
     let mut calendar_text = Vec::new();
-    
-    calendar_text.push(Line::from(vec![
-        Span::styled("7-Day Weather Calendar", Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
-    ]));
+
+    calendar_text.push(Line::from(vec![Span::styled(
+        "7-Day Weather Calendar",
+        Style::default()
+            .fg(Color::Cyan)
+            .add_modifier(Modifier::BOLD),
+    )]));
     calendar_text.push(Line::from(vec![Span::raw("")]));
-    
+
     // Show next 7 days with weather info
     for (_i, day) in daily_data.iter().take(7).enumerate() {
         let local_date = convert_to_local(&day.date, &location.timezone);
         let weekday = local_date.format("%A").to_string();
         let date_str = local_date.format("%m/%d").to_string();
-        
+
         let condition_emoji = day.main_condition.get_emoji();
         let color = match day.main_condition {
             WeatherCondition::Clear => Color::Yellow,
@@ -317,9 +316,9 @@ fn render_weather_calendar<B: ratatui::backend::Backend>(
             WeatherCondition::Snow => Color::White,
             _ => Color::Gray,
         };
-        
+
         let pop_percent = (day.pop * 100.0) as u8;
-        
+
         calendar_text.push(Line::from(vec![
             Span::styled(format!("{:9}", weekday), Style::default().fg(Color::Cyan)),
             Span::raw(" "),
@@ -327,14 +326,23 @@ fn render_weather_calendar<B: ratatui::backend::Backend>(
             Span::raw("  "),
             Span::styled(condition_emoji, Style::default()),
             Span::raw(" "),
-            Span::styled(format!("{}", day.main_condition), Style::default().fg(color)),
+            Span::styled(
+                format!("{}", day.main_condition),
+                Style::default().fg(color),
+            ),
             Span::raw("  "),
-            Span::styled(format!("{}°-{}°C", day.temp_min as i32, day.temp_max as i32), Style::default().fg(Color::White)),
+            Span::styled(
+                format!("{}°-{}°C", day.temp_min as i32, day.temp_max as i32),
+                Style::default().fg(Color::White),
+            ),
             Span::raw("  "),
-            Span::styled(format!("{}%", pop_percent), Style::default().fg(Color::Blue)),
+            Span::styled(
+                format!("{}%", pop_percent),
+                Style::default().fg(Color::Blue),
+            ),
         ]));
     }
-    
+
     calendar_text.push(Line::from(vec![Span::raw("")]));
     calendar_text.push(Line::from(vec![
         Span::styled("Legend: ", Style::default().fg(Color::Gray)),
@@ -342,7 +350,7 @@ fn render_weather_calendar<B: ratatui::backend::Backend>(
         Span::raw(" | "),
         Span::styled("Rain %", Style::default().fg(Color::Blue)),
     ]));
-    
+
     let calendar = Paragraph::new(calendar_text)
         .block(
             Block::default()
@@ -351,7 +359,7 @@ fn render_weather_calendar<B: ratatui::backend::Backend>(
                 .style(Style::default().fg(Color::Cyan)),
         )
         .wrap(Wrap { trim: false });
-    
+
     frame.render_widget(calendar, area);
 }
 
@@ -365,7 +373,7 @@ impl Drop for WeatherTui {
             DisableMouseCapture
         );
         let _ = self.terminal.show_cursor();
-        
+
         // Print a newline to ensure the terminal is in a good state
         println!();
     }

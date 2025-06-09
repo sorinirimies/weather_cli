@@ -7,8 +7,8 @@ mod modules;
 
 use modules::forecaster::WeatherForecaster;
 use modules::location::LocationService;
-use modules::types::{DetailLevel, WeatherConfig};
 use modules::tui::WeatherTui;
+use modules::types::{DetailLevel, WeatherConfig};
 use modules::ui::WeatherUI;
 
 #[derive(Parser)]
@@ -43,7 +43,7 @@ struct Cli {
     /// Disable animations
     #[arg(short = 'a', long, default_value = "false")]
     no_animations: bool,
-    
+
     /// Disable weather canvas (use text output only)
     #[arg(long, default_value = "false")]
     no_charts: bool,
@@ -57,8 +57,6 @@ struct Cli {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
-
-
     // Configure based on command-line arguments
     let config = WeatherConfig {
         units: cli.units,
@@ -69,13 +67,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         no_charts: cli.no_charts,
     };
 
-
-
     // Initialize components
     let ui = WeatherUI::new(config.animation_enabled, config.json_output);
     let location_service = LocationService::new();
     let forecaster = WeatherForecaster::new(config.clone());
-    
+
     // Check for test charts flag first
     if cli.test_charts {
         return run_test_charts(config).await;
@@ -83,19 +79,69 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Run selected mode
     match cli.mode.as_str() {
-            "current" => run_current_weather(forecaster.clone(), location_service.clone(), ui.clone(), config.clone()).await?,
-            "forecast" => run_forecast(forecaster.clone(), location_service.clone(), ui.clone(), config.clone()).await?,
-            "hourly" => run_hourly_forecast(forecaster.clone(), location_service.clone(), ui.clone(), config.clone()).await?,
-            "daily" => run_daily_forecast(forecaster.clone(), location_service.clone(), ui.clone(), config.clone()).await?,
-            "full" => run_full_weather(forecaster.clone(), location_service.clone(), ui.clone(), config.clone()).await?,
-            "interactive" => run_interactive_menu(forecaster.clone(), location_service.clone(), ui.clone(), config.clone()).await?,
-            "canvas" => run_charts_mode(forecaster.clone(), location_service.clone(), config.clone()).await?,
-            _ => {
-                eprintln!("{}", "Invalid mode specified!".bright_red());
-                eprintln!("Valid modes: current, forecast, hourly, daily, full, interactive, canvas");
-                process::exit(1);
-            }
+        "current" => {
+            run_current_weather(
+                forecaster.clone(),
+                location_service.clone(),
+                ui.clone(),
+                config.clone(),
+            )
+            .await?
         }
+        "forecast" => {
+            run_forecast(
+                forecaster.clone(),
+                location_service.clone(),
+                ui.clone(),
+                config.clone(),
+            )
+            .await?
+        }
+        "hourly" => {
+            run_hourly_forecast(
+                forecaster.clone(),
+                location_service.clone(),
+                ui.clone(),
+                config.clone(),
+            )
+            .await?
+        }
+        "daily" => {
+            run_daily_forecast(
+                forecaster.clone(),
+                location_service.clone(),
+                ui.clone(),
+                config.clone(),
+            )
+            .await?
+        }
+        "full" => {
+            run_full_weather(
+                forecaster.clone(),
+                location_service.clone(),
+                ui.clone(),
+                config.clone(),
+            )
+            .await?
+        }
+        "interactive" => {
+            run_interactive_menu(
+                forecaster.clone(),
+                location_service.clone(),
+                ui.clone(),
+                config.clone(),
+            )
+            .await?
+        }
+        "canvas" => {
+            run_charts_mode(forecaster.clone(), location_service.clone(), config.clone()).await?
+        }
+        _ => {
+            eprintln!("{}", "Invalid mode specified!".bright_red());
+            eprintln!("Valid modes: current, forecast, hourly, daily, full, interactive, canvas");
+            process::exit(1);
+        }
+    }
 
     Ok(())
 }
@@ -130,7 +176,7 @@ async fn run_current_weather(
     } else {
         ui.show_current_weather(&weather, &location)?;
         ui.show_weather_recommendations(&weather)?;
-        
+
         // Show weather canvas unless disabled
         if !config.no_charts {
             println!("\n🌤️  Loading interactive weather view...");
@@ -173,7 +219,7 @@ async fn run_forecast(
         println!("{}", serde_json::to_string_pretty(&forecast)?);
     } else {
         ui.show_forecast(&forecast, &location)?;
-        
+
         // Show weather canvas unless disabled
         if !config.no_charts {
             println!("\n🌤️  Loading interactive weather view...");
@@ -216,7 +262,7 @@ async fn run_daily_forecast(
         println!("{}", serde_json::to_string_pretty(&forecast)?);
     } else {
         ui.show_daily_forecast(&forecast, &location)?;
-        
+
         // Show weather canvas unless disabled
         if !config.no_charts {
             println!("\n🌤️  Loading interactive weather view...");
@@ -259,7 +305,7 @@ async fn run_hourly_forecast(
         println!("{}", serde_json::to_string_pretty(&forecast)?);
     } else {
         ui.show_hourly_forecast(&forecast, &location)?;
-        
+
         // Show weather canvas unless disabled
         if !config.no_charts {
             println!("\n🌤️  Loading interactive weather view...");
@@ -322,7 +368,7 @@ async fn run_full_weather(
 
         ui.show_daily_forecast(&daily, &location)?;
         ui.show_weather_recommendations(&current)?;
-        
+
         // Show weather canvas unless disabled
         if !config.no_charts {
             // First run the weather canvas mode in a separate function
@@ -414,11 +460,20 @@ async fn run_interactive_menu(
             }
             "canvas" => {
                 // Get hourly and daily forecasts for weather canvas
-                let hourly = forecaster.get_hourly_forecast(&location_service.get_location_from_ip().await?).await?;
-                let daily = forecaster.get_daily_forecast(&location_service.get_location_from_ip().await?).await?;
-                
+                let hourly = forecaster
+                    .get_hourly_forecast(&location_service.get_location_from_ip().await?)
+                    .await?;
+                let daily = forecaster
+                    .get_daily_forecast(&location_service.get_location_from_ip().await?)
+                    .await?;
+
                 // Create and run the TUI
-                let mut tui = WeatherTui::new(hourly, daily, location_service.get_location_from_ip().await?, config.clone())?;
+                let mut tui = WeatherTui::new(
+                    hourly,
+                    daily,
+                    location_service.get_location_from_ip().await?,
+                    config.clone(),
+                )?;
                 tui.run()?;
             }
             "exit" => break,
@@ -441,15 +496,15 @@ async fn run_charts_mode(
         Some(loc) => location_service.get_location_by_name(loc).await?,
         None => location_service.get_location_from_ip().await?,
     };
-    
+
     // Get the data we need for the charts
     let hourly = forecaster.get_hourly_forecast(&location).await?;
     let daily = forecaster.get_daily_forecast(&location).await?;
-    
+
     // Clear screen for clean TUI transition
     print!("\x1B[2J\x1B[1;1H");
     std::io::Write::flush(&mut std::io::stdout()).unwrap_or(());
-    
+
     // Create and run the TUI directly
     let mut tui = WeatherTui::new(hourly, daily, location, config)?;
     tui.run()?;
@@ -457,12 +512,12 @@ async fn run_charts_mode(
 }
 
 async fn run_test_charts(config: WeatherConfig) -> Result<(), Box<dyn std::error::Error>> {
-    use modules::types::{DailyForecast, HourlyForecast, Location, WeatherCondition};
     use chrono::Utc;
+    use modules::types::{DailyForecast, HourlyForecast, Location, WeatherCondition};
 
     println!("🧪 Testing Weather Canvas TUI");
     println!("===============================");
-    
+
     // Create test location
     let location = Location {
         name: "Test City".to_string(),
@@ -474,11 +529,11 @@ async fn run_test_charts(config: WeatherConfig) -> Result<(), Box<dyn std::error
         region: Some("Test Region".to_string()),
         state: Some("Test State".to_string()),
     };
-    
+
     // Generate test hourly data
     let mut hourly_data = Vec::new();
     let base_time = Utc::now();
-    
+
     for i in 0..24 {
         let forecast = HourlyForecast {
             timestamp: base_time + chrono::Duration::hours(i),
@@ -489,7 +544,11 @@ async fn run_test_charts(config: WeatherConfig) -> Result<(), Box<dyn std::error
             wind_speed: 5.0 + (i as f64 * 0.2),
             wind_direction: (i * 15) as u16,
             conditions: vec![],
-            main_condition: if i % 4 == 0 { WeatherCondition::Rain } else { WeatherCondition::Clear },
+            main_condition: if i % 4 == 0 {
+                WeatherCondition::Rain
+            } else {
+                WeatherCondition::Clear
+            },
             pop: (i as f64 * 0.04).min(1.0),
             visibility: 10000,
             clouds: (i * 5) as u8,
@@ -498,10 +557,10 @@ async fn run_test_charts(config: WeatherConfig) -> Result<(), Box<dyn std::error
         };
         hourly_data.push(forecast);
     }
-    
+
     // Generate test daily data
     let mut daily_data = Vec::new();
-    
+
     for i in 0..7 {
         let forecast = DailyForecast {
             date: base_time + chrono::Duration::days(i),
@@ -535,18 +594,18 @@ async fn run_test_charts(config: WeatherConfig) -> Result<(), Box<dyn std::error
         };
         daily_data.push(forecast);
     }
-    
+
     println!("📊 Created {} hourly forecasts", hourly_data.len());
     println!("📅 Created {} daily forecasts", daily_data.len());
     println!("🎯 Starting TUI in 2 seconds...");
     println!("💡 Use arrow keys or 1-5 to switch tabs, 'q' to exit");
-    
+
     std::thread::sleep(std::time::Duration::from_millis(2000));
-    
+
     // Create and run TUI
     let mut tui = WeatherTui::new(hourly_data, daily_data, location, config)?;
     tui.run()?;
-    
+
     println!("✅ TUI test completed successfully!");
     Ok(())
 }
