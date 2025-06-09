@@ -1074,7 +1074,7 @@ impl WeatherUI {
             let is_day = {
                 use chrono::{Local, Timelike};
                 let hour = Local::now().hour();
-                hour >= 6 && hour < 18
+                (6..18).contains(&hour)
             };
 
             crate::modules::canvas::render_weather_canvas(

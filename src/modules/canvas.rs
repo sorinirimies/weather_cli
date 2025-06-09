@@ -129,14 +129,10 @@ fn draw_sky_gradient(
                         } else {
                             Color::Blue
                         }
+                    } else if intensity < 0.4 {
+                        Color::LightBlue
                     } else {
-                        if intensity < 0.4 {
-                            Color::LightBlue
-                        } else if intensity < 0.8 {
-                            Color::Blue
-                        } else {
-                            Color::Blue
-                        }
+                        Color::Blue
                     }
                 }
             }
@@ -145,8 +141,6 @@ fn draw_sky_gradient(
                 WeatherCondition::Clear => {
                     if intensity < 0.6 {
                         Color::Black
-                    } else if intensity < 0.9 {
-                        Color::Blue
                     } else {
                         Color::Blue
                     }
@@ -207,7 +201,7 @@ fn draw_ground_terrain(ctx: &mut Context, condition: &WeatherCondition) {
 
         for x in (0..400).step_by(density) {
             let offset_x = x as f64 + ((y as f64 * 0.5).sin() * 3.0);
-            if offset_x >= 0.0 && offset_x < 400.0 {
+            if (0.0..400.0).contains(&offset_x) {
                 ctx.draw(&Points {
                     coords: &[(offset_x, y as f64)],
                     color: base_color,
@@ -482,7 +476,7 @@ fn draw_cloud_formations(ctx: &mut Context, humidity: u8, is_day: bool, is_storm
         Color::Gray
     };
 
-    let num_clouds = ((humidity / 15).max(2).min(8)) as usize;
+    let num_clouds = ((humidity / 15).clamp(2, 8)) as usize;
     let cloud_data = [
         (60.0, 140.0, 32.0, 0.8),
         (140.0, 155.0, 38.0, 1.0),
@@ -494,7 +488,7 @@ fn draw_cloud_formations(ctx: &mut Context, humidity: u8, is_day: bool, is_storm
         (340.0, 130.0, 29.0, 0.7),
     ];
 
-    for (_i, (x, y, size, opacity)) in cloud_data.iter().take(num_clouds).enumerate() {
+    for (x, y, size, opacity) in cloud_data.iter().take(num_clouds) {
         draw_realistic_cloud(ctx, *x, *y, *size, base_color, *opacity, is_storm);
 
         // Add cloud shadows on ground if it's day
@@ -541,7 +535,7 @@ fn draw_realistic_cloud(
             _ => base_color,
         };
 
-        for (_i, (px, py, psize)) in puff_positions.iter().take(num_puffs).enumerate() {
+        for (px, py, psize) in puff_positions.iter().take(num_puffs) {
             let adjusted_size = psize * (1.0 - layer as f64 * 0.1);
             ctx.draw(&Circle {
                 x: px + layer_offset,
@@ -585,7 +579,7 @@ fn draw_cloud_shadow(ctx: &mut Context, cloud_x: f64, cloud_size: f64) {
 
     for x in 0..(shadow_width as u32) {
         let shadow_x = cloud_x - shadow_width / 2.0 + x as f64;
-        if shadow_x >= 0.0 && shadow_x < 400.0 {
+        if (0.0..400.0).contains(&shadow_x) {
             let opacity_factor = 1.0 - (x as f64 - shadow_width / 2.0).abs() / (shadow_width / 2.0);
             if opacity_factor > 0.3 {
                 ctx.draw(&Points {
@@ -662,7 +656,7 @@ fn draw_rain_system(ctx: &mut Context, heavy_rain: bool, wind_speed: f64) {
             let wind_offset = (y_pos - 60.0) * wind_lean * 0.02;
             let final_x = base_x + wind_offset;
 
-            if final_x >= 0.0 && final_x < 400.0 && y_pos > 50.0 {
+            if (0.0..400.0).contains(&final_x) && y_pos > 50.0 {
                 let drop_bottom = y_pos - drop_length;
 
                 // Main raindrop
@@ -855,7 +849,7 @@ fn draw_torrential_rain(ctx: &mut Context, wind_speed: f64) {
             let wind_offset = (y_pos - 60.0) * wind_lean * 0.03;
             let final_x = base_x + wind_offset;
 
-            if final_x >= 0.0 && final_x < 400.0 && y_pos > 50.0 {
+            if (0.0..400.0).contains(&final_x) && y_pos > 50.0 {
                 let drop_length = 25.0;
                 let drop_bottom = y_pos - drop_length;
 
@@ -944,7 +938,7 @@ fn draw_snow_system(ctx: &mut Context, temperature: f64, wind_speed: f64) {
             let fall_speed = if temperature < -10.0 { 8 } else { 6 };
             let y_pos = ((layer * fall_speed + snow_frame as usize + i * 4) % 140 + 60) as f64;
 
-            if final_x >= 0.0 && final_x < 400.0 && y_pos < 180.0 {
+            if (0.0..400.0).contains(&final_x) && y_pos < 180.0 {
                 let flake_type = (i + layer) % 6;
                 draw_detailed_snowflake(ctx, final_x, y_pos, flake_type, temperature);
             }
@@ -1109,7 +1103,7 @@ fn draw_snow_drifts(ctx: &mut Context) {
     // Variable snow depth creating natural drifts
     for x in 0..400 {
         let drift_height = 8.0 + 6.0 * ((x as f64 * 0.02).sin()) + 3.0 * ((x as f64 * 0.05).cos());
-        let snow_depth = drift_height.max(2.0).min(15.0);
+        let snow_depth = drift_height.clamp(2.0, 15.0);
 
         for y in 0..(snow_depth as u32) {
             let ground_y = 50.0 - y as f64;
@@ -1227,7 +1221,7 @@ fn draw_fog_tendrils(ctx: &mut Context, wind_speed: f64, thick_fog: bool) {
             let (x1, y1) = tendril_points[i];
             let (x2, y2) = tendril_points[i + 1];
 
-            if x1 >= 0.0 && x1 < 400.0 && x2 >= 0.0 && x2 < 400.0 {
+            if (0.0..400.0).contains(&x1) && (0.0..400.0).contains(&x2) {
                 // Main tendril
                 ctx.draw(&Line {
                     x1,
@@ -1268,7 +1262,7 @@ fn draw_wind_patterns(ctx: &mut Context, wind_speed: f64) {
         .unwrap()
         .as_millis();
     let motion_offset = (time / 150) % 200;
-    let num_streams = ((wind_speed / 6.0).min(10.0).max(3.0)) as usize;
+    let num_streams = ((wind_speed / 6.0).clamp(3.0, 10.0)) as usize;
 
     for stream in 0..num_streams {
         let base_y = 70.0 + (stream as f64 * 18.0);
@@ -1334,7 +1328,7 @@ fn draw_grass_details(ctx: &mut Context) {
             let grass_x = x as f64 + sway as f64 * (h as f64 * 0.3);
             let grass_y = 50.0 + h as f64;
 
-            if grass_x >= 0.0 && grass_x < 400.0 {
+            if (0.0..400.0).contains(&grass_x) {
                 ctx.draw(&Points {
                     coords: &[(grass_x, grass_y)],
                     color: if h > grass_height / 2 {
@@ -1511,7 +1505,7 @@ pub fn render_current_weather_canvas<B: ratatui::backend::Backend>(
 fn is_daytime(timestamp: &chrono::DateTime<chrono::Utc>) -> bool {
     use chrono::Timelike;
     let hour = timestamp.hour();
-    hour >= 6 && hour < 18
+    (6..18).contains(&hour)
 }
 
 /// Render enhanced forecast canvas with detailed mini weather scenes

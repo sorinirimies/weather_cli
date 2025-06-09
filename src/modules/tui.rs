@@ -45,7 +45,7 @@ impl TuiTab {
         }
     }
 
-    fn to_string(&self) -> &'static str {
+    fn to_string(self) -> &'static str {
         match self {
             TuiTab::CurrentWeather => "Current Weather",
             TuiTab::WeatherForecast => "Weather Forecast",
@@ -302,7 +302,7 @@ fn render_weather_calendar<B: ratatui::backend::Backend>(
     calendar_text.push(Line::from(vec![Span::raw("")]));
 
     // Show next 7 days with weather info
-    for (_i, day) in daily_data.iter().take(7).enumerate() {
+    for day in daily_data.iter().take(7) {
         let local_date = convert_to_local(&day.date, &location.timezone);
         let weekday = local_date.format("%A").to_string();
         let date_str = local_date.format("%m/%d").to_string();
